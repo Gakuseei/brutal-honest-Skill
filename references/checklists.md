@@ -14,10 +14,10 @@
 - [ ] **AI security (if applicable)** — Prompt injection prevention, LLM output sanitization, AI tool permissions gated
 
 ### Performance
-- [ ] **Appropriate for platform** — Web: Core Web Vitals (LCP <2s, INP <100ms, CLS <0.05) | Mobile: startup <2s | API: p95 <200ms
+- [ ] **Appropriate for platform** — Web: Core Web Vitals (LCP ≤2.5s, INP ≤200ms, CLS ≤0.1) | Games: 60fps (16.6ms frame budget), consistent frame pacing | Mobile: startup <2s | API: p95 <200ms
 - [ ] **Asset optimization** — Images (modern formats), fonts (font-display: swap), bundle sizes appropriate for target
 - [ ] **Caching strategy** — HTTP caching, application-level caching, CDN where appropriate
-- [ ] **Lazy loading** — Below-fold content, heavy dependencies, routes/pages loaded on demand
+- [ ] **Lazy loading** — Below-fold content, heavy dependencies, routes/pages loaded on demand (not applicable to games — games preload assets behind loading screens)
 - [ ] **No unnecessary computation** — Database queries optimized, N+1 queries eliminated, pagination for large datasets
 
 ### Architecture
@@ -76,6 +76,7 @@
 - [ ] **Server load functions** — Data fetching in `+page.server.ts`, not client-side
 - [ ] **Form actions** — Server-side form handling with progressive enhancement
 - [ ] **TypeScript** — Typed with `lang="ts"`, proper `PageData` typing
+- [ ] **Component props** — Using `$props()` rune for component props (Svelte 5+), not `export let`
 
 ### Angular
 - [ ] **Signals** — Using Angular signals for reactivity, not zone-based change detection
@@ -86,7 +87,7 @@
 
 ### Python (Django / FastAPI / Flask)
 - [ ] **Type hints** — Full type annotation (Python 3.13+ syntax)
-- [ ] **Async patterns** — async/await where I/O bound (FastAPI, Django 5.x async views)
+- [ ] **Async patterns** — async/await where I/O bound (FastAPI, Django 6.x async views, background tasks, CSP)
 - [ ] **ORM usage** — Proper queryset patterns, select_related/prefetch_related, no N+1
 - [ ] **Virtual environment** — Dependencies isolated, requirements pinned
 - [ ] **Security middleware** — CORS, rate limiting, input validation (Pydantic / Django forms)
@@ -188,3 +189,59 @@
 - [ ] **State management** — Appropriate for framework (Riverpod/Bloc for Flutter, Zustand for RN)
 - [ ] **Performance** — No jank, 60fps scrolling, optimized list rendering
 - [ ] **Accessibility** — VoiceOver/TalkBack support, semantic labels
+
+### Unity (C#)
+- [ ] **Game loop** — FixedUpdate for physics, Update for input/rendering, no physics in Update
+- [ ] **Object pooling** — Reuse frequently spawned objects (bullets, particles, VFX), not Instantiate/Destroy per frame
+- [ ] **DOTS awareness** — Using ECS (Entities package) for data-heavy systems where applicable (Unity 6.4+ makes ECS a core package)
+- [ ] **Addressables** — Asset loading via Addressables system, not Resources.Load (causes bloated builds)
+- [ ] **Performance** — Draw call batching, profiler-verified frame budget, no GetComponent/Find in hot loops
+
+### Unreal Engine (C++/Blueprints)
+- [ ] **UPROPERTY/UFUNCTION** — GC integration via macros, proper replication markup for multiplayer
+- [ ] **Blueprint vs C++** — Performance-critical logic in C++, designer-facing config in Blueprints
+- [ ] **Nanite/Lumen** — Using engine rendering features (Nanite geometry, Lumen GI) where hardware supports
+- [ ] **PCG usage** — Procedural Content Generation framework for environment population (production-ready in 5.7)
+- [ ] **Actor lifecycle** — Proper BeginPlay/EndPlay, component initialization order, no unmanaged raw pointers
+
+### Godot (GDScript/C#)
+- [ ] **Process separation** — `_physics_process` for physics, `_process` for rendering/input, not mixed
+- [ ] **Signal patterns** — Using signals for decoupled communication, not direct node references across tree
+- [ ] **Jolt Physics** — Using Jolt (default since 4.6) for 3D physics, proper collision layers/masks
+- [ ] **Export variables** — `@export` for inspector-editable properties, typed and documented
+- [ ] **Scene composition** — Node composition over deep inheritance, autoloads only for true singletons
+
+### Phaser / Web 2D (PixiJS, Kaplay)
+- [ ] **Scene management** — Proper scene lifecycle (preload → create → update), asset preloading behind loading screens
+- [ ] **Sprite batching** — Texture atlases for draw call reduction, not individual image files per sprite
+- [ ] **Audio context** — User gesture required before audio play (browser policy), handled gracefully
+- [ ] **Object pooling** — Reuse game objects (Group.get/create pattern), not destroy/recreate each frame
+- [ ] **WebGL context** — Handle context loss/restoration, fallback strategy if WebGL unavailable
+
+### Web Canvas Game (vanilla JS + canvas)
+- [ ] **Worker thread offloading** — Simulation/game logic in Web Worker, rendering on main thread only; communicate via postMessage
+- [ ] **Zero-copy transfer** — Item/entity data packed into Float32Array and sent as transferable ArrayBuffer (no serialization overhead)
+- [ ] **TypedArray hot data** — Int32Array/Float32Array for spatial indices, tile counters, item buffers; not regular objects/arrays in hot loops
+- [ ] **Adaptive quality** — Monitor frame times (rolling buffer), auto-degrade rendering detail (LOD thresholds, particle caps, draw skipping) when frame budget exceeded
+- [ ] **GC-free hot path** — Ring buffers for history data, object/array pooling, swap-and-pop removal, dirty tracking instead of full array clears, pre-computed lookup indices
+
+### Three.js / Web 3D (Babylon.js)
+- [ ] **WebGPU** — Using WebGPURenderer with auto-fallback to WebGL 2 (production-ready since r171+, all browsers 2026)
+- [ ] **Geometry instancing** — InstancedMesh for repeated objects (grass, trees, particles), not individual meshes
+- [ ] **Asset disposal** — Proper dispose() calls for geometries, materials, textures to prevent GPU memory leaks
+- [ ] **Frame budget** — requestAnimationFrame loop with delta time, performance monitoring, adaptive quality
+- [ ] **Render pipeline** — Frustum culling enabled, LOD for distant objects, post-processing budget managed
+
+### Bevy (Rust ECS)
+- [ ] **ECS architecture** — Systems operate on component queries, no direct entity manipulation outside systems
+- [ ] **Required Components** — Using Required Components pattern (0.15+) for entity spawning
+- [ ] **Resource management** — Assets loaded via AssetServer, Handle<T> references, no synchronous file I/O
+- [ ] **Plugin architecture** — Features organized as plugins, clean dependency graph between plugins
+- [ ] **System scheduling** — Proper system ordering with .before()/.after(), no implicit ordering bugs
+
+### Pygame / Love2D / Raylib
+- [ ] **Game loop** — Fixed timestep with accumulator for physics, delta time for rendering, not frame-locked
+- [ ] **Asset management** — Assets loaded once at init/scene start, not every frame, proper cleanup on exit
+- [ ] **Input abstraction** — Input mapped to actions (not raw key checks everywhere), supports rebinding
+- [ ] **Memory management** — No per-frame allocations in hot loop (Pygame: reuse surfaces; Love2D: pre-create objects; Raylib: stack allocation)
+- [ ] **State management** — Game state machine (menu → play → pause → game over), clean transitions
