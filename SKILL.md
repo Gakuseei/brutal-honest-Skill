@@ -5,7 +5,7 @@ author: gakuseei
 author_url: https://github.com/Gakuseei
 version: 2.3.0
 last-updated: 2026-02-22
-allowed-tools: [Read, Glob, Bash(git:*)]
+allowed-tools: [Read, Glob, Bash(git:*), Vision]
 ---
 
 # brutal-honest
