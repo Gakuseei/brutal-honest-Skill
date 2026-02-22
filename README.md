@@ -65,6 +65,7 @@ Works with any tech stack. Auto-detects and applies relevant checklists:
 | Phaser / Web 2D | `package.json` with `phaser` |
 | Three.js / Web 3D | `package.json` with `three` |
 | PixiJS | `package.json` with `pixi.js` |
+| Kaplay | `package.json` with `kaplay` |
 | Bevy (Rust ECS) | `Cargo.toml` with `bevy` |
 | Love2D | `conf.lua` + `main.lua` |
 | Pygame | `*.py` with `import pygame` |
@@ -98,7 +99,7 @@ Output:
 ## BRUTAL REVIEW: Authentication
 
 ### CRITICAL
-- Hardcoded API key - app.js:12
+- Hardcoded API key - config.js:12
 
 ### VERDICT
 Security Swiss cheese. Fix CRITICAL before prod.

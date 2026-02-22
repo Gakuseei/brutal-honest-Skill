@@ -5,8 +5,7 @@ author: gakuseei
 author_url: https://github.com/Gakuseei
 version: 2.3.0
 last-updated: 2026-02-22
-allowed-tools: [Read, Glob, Bash(git:*), LS, Vision]
-Limits: Read max 30 files, Glob max 100 results, Vision max 20 images
+allowed-tools: [Read, Glob, Bash(git:*)]
 ---
 
 # brutal-honest
@@ -60,11 +59,12 @@ Detect the project's tech stack before applying any checklist. This determines w
 | `project.godot` | Godot | Godot-specific + Game + Universal |
 | `package.json` with `"phaser"` | Phaser | Phaser-specific + Game + Universal |
 | `package.json` with `"three"` | Three.js | Three.js-specific + Game + Universal |
-| `package.json` with `"pixi.js"` | PixiJS | PixiJS-specific + Game + Universal |
+| `package.json` with `"pixi.js"` | PixiJS | Phaser/Web 2D-specific + Game + Universal |
+| `package.json` with `"kaplay"` | Kaplay | Phaser/Web 2D-specific + Game + Universal |
 | `Cargo.toml` with `bevy` | Bevy | Bevy-specific + Game + Universal |
 | `conf.lua` + `main.lua` | Love2D | Love2D-specific + Game + Universal |
 | `*.py` with `import pygame` | Pygame | Pygame-specific + Game + Universal |
-| `*.html` with `<canvas>` + game loop | Web Canvas Game | Game + Web standards + Universal |
+| `*.html` with `<canvas>` + game loop (heuristic: `requestAnimationFrame` or `setInterval` with update/draw pattern) | Web Canvas Game | Game + Web standards + Universal |
 | No recognizable config | Ask user | — |
 
 **Important:** Only apply stack-specific items when that stack is detected. A Python API does not get React checklist items. A vanilla HTML game does not get Next.js items.
@@ -111,13 +111,14 @@ Use this if `references/severity-guide.md` not found.
 - **Security**: Hardcoded secrets, SQL injection, XSS, no input validation, CSRF without protection
 - **Accessibility**: WCAG 2.2 violations = legal risk
 - **Stability**: Crashes, infinite loops, memory leaks, unhandled exceptions in critical paths
+- **Data loss**: No backups, no transaction safety, destructive operations without confirmation
 - **Soft-lock**: Player cannot progress and cannot load a prior save (game projects)
 - **Save corruption**: Save data can be lost or corrupted without detection/recovery (game projects)
 - **Determinism failure**: Desyncs in multiplayer from non-deterministic simulation (multiplayer games)
 
 ### MAJOR - Ship blocker
 - **Outdated framework**: Using a framework version 2+ major versions behind current stable release (for game engines: locking to an LTS version is standard; flag only if engine version is end-of-life or unsupported)
-- **Architecture**: 2000+ line files without clear section separation (unless architecturally intentional, e.g., single-file apps, embeddable widgets), copy-paste code, God objects/functions, circular dependencies
+- **Architecture**: 2000+ line files without clear section separation (unless architecturally intentional, e.g., single-file apps, embeddable widgets, Go's copy-over-dependency idiom), copy-paste code, God objects/functions, circular dependencies
 - **Type safety**: No strict mode (where applicable), untyped interfaces at boundaries
 - **UX**: No loading states, broken mobile, no error feedback to users
 - **AI Architecture**: Client-side LLM calls instead of server-side (exposes API keys)
@@ -139,12 +140,14 @@ Use this if `references/severity-guide.md` not found.
 - **No input rebinding**: Hardcoded controls with no remapping option (game projects — accessibility baseline)
 - **No game accessibility**: Missing colorblind mode, subtitles, or difficulty options (game projects — 2026 baseline)
 - **No spatial partitioning**: Brute-force collision detection with many entities, no quadtree/octree/spatial hash (game projects)
+- **No monitoring**: No error tracking, no performance monitoring, no logging strategy
 
 ### MINOR - Nitpick, but fix it
 - **Inconsistent code style**: Mixed formatting, naming conventions, quote styles in same file
 - **Missing documentation**: Public APIs without types/docs
 - **Debug code in production**: console.log, print(), debug flags left in code
 - **Div soup / non-semantic markup**: Where applicable to web projects
+- **Inconsistent naming**: Mixed camelCase/snake_case, unclear variable names
 - **Audio mixing issues**: No separate volume controls for music/SFX/dialogue, or sound clipping from too many simultaneous voices (game projects)
 
 ---
@@ -177,6 +180,11 @@ Use this if `references/checklists.md` not found.
 - [ ] Unit tests exist for core logic
 - [ ] Integration tests for critical paths
 - [ ] E2E tests for key user flows (where applicable)
+
+**CI/CD:**
+- [ ] Automated builds — Build runs on every PR
+- [ ] Linting/formatting — Enforced in CI, not just local
+- [ ] Tests run on PR — Failing tests block merge
 
 **Accessibility (web/mobile):**
 - [ ] WCAG 2.2 compliance — Focus rings, keyboard nav
@@ -368,8 +376,8 @@ Priority: [High/Medium/Low with rationale]
 ## Changelog
 
 ### 2.3.0 (2026-02-22)
-- Added game development support: 10 game engine/framework detection entries (Unity, Unreal, Godot, Phaser, Three.js, PixiJS, Bevy, Love2D, Pygame, Web Canvas)
-- Added 8 game-engine-specific checklists (5 items each): Unity, Unreal Engine, Godot, Phaser/Web 2D, Three.js/Web 3D, Bevy, Pygame/Love2D/Raylib
+- Added game development support: 11 game engine/framework detection entries (Unity, Unreal, Godot, Phaser, Three.js, PixiJS, Kaplay, Bevy, Love2D, Pygame, Web Canvas)
+- Added 9 game-engine-specific checklists (5 items each): Unity, Unreal Engine, Godot, Phaser/Web 2D, Three.js/Web 3D, Bevy, Pygame/Love2D/Raylib, Web Canvas Game
 - Added game-specific severity items: CRITICAL (soft-lock, save corruption, determinism failure), MAJOR (no object pooling, wrong update loop, no frame budget), MEDIUM (no input rebinding, no game accessibility, no spatial partitioning), MINOR (audio mixing issues)
 - Added Game UI Patterns section: HUD design, menu architecture, tutorial/onboarding, resolution independence, game accessibility (2026 baseline), frame budget model, game audio
 - Added context guards to suppress web-only false positives on game projects (CWV, lazy loading, anti-AI-slop font/gradient rules, CI/CD as MEDIUM, global state)

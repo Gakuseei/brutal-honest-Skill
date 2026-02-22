@@ -20,7 +20,7 @@ Fix yesterday.
 Ship blocker.
 
 - **Outdated framework** — Using a version 2+ major versions behind current stable release (check against latest stable, not a hardcoded version number; for game engines: locking to an LTS version is standard; flag only if engine version is end-of-life or unsupported)
-- **Architecture** — 2000+ line files without clear section separation (unless architecturally intentional, e.g., single-file apps, Go's copy-over-dependency idiom), God objects/functions, circular dependencies
+- **Architecture** — 2000+ line files without clear section separation (unless architecturally intentional, e.g., single-file apps, embeddable widgets, Go's copy-over-dependency idiom), God objects/functions, circular dependencies
 - **Type safety** — No strict mode (where language supports it), `any`/`object`/`interface{}` everywhere at boundaries
 - **UX** — No loading states, broken mobile/responsive, no error feedback to users
 - **AI Architecture** — Client-side LLM calls instead of server-side (exposes API keys)
