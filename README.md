@@ -115,6 +115,9 @@ Auto-detects and applies relevant checklists. Only stack-specific items for dete
 | **Java / Kotlin** | `pom.xml` / `build.gradle` | JVM-specific patterns |
 | **C# / .NET** | `*.csproj` / `*.sln` | .NET-specific patterns |
 | **Flutter / Dart** | `pubspec.yaml` | Platform conventions, state management, accessibility |
+| **Astro** | `astro.config.*` | Astro-specific patterns |
+| **Remix** | `package.json` with `@remix-run` | Remix-specific patterns |
+| **SolidJS** | `package.json` with `solid-js` | Solid-specific patterns |
 | **Hono** | `package.json` with `hono` | Hono-specific patterns |
 | **Vanilla HTML/JS/CSS** | Standalone `.html` files | Progressive enhancement, semantic HTML, Web Standards |
 
