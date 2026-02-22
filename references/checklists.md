@@ -112,6 +112,69 @@
 - [ ] **Laravel 12 features** — Using latest framework idioms, not legacy patterns
 - [ ] **Type declarations** — PHP 8.3+ type hints, strict_types declared
 
+### Astro
+- [ ] **Island architecture** — Interactive components wrapped in `client:*` directives, static by default
+- [ ] **Content Collections** — Using type-safe content collections with Zod schemas, not raw file reads
+- [ ] **Zero JS by default** — Pages ship zero client JS unless explicitly opted in with `client:load/visible/idle`
+- [ ] **View Transitions** — Using Astro's built-in View Transitions for page navigation
+- [ ] **Integration usage** — Using official integrations (@astrojs/react, @astrojs/tailwind) not manual configs
+
+### Remix
+- [ ] **Loaders and actions** — Data fetching in `loader()`, mutations in `action()`, not client-side fetches
+- [ ] **Nested routes** — Route hierarchy reflects UI hierarchy, shared layouts via nesting
+- [ ] **Progressive enhancement** — Forms work without JavaScript, `<Form>` component used
+- [ ] **Error boundaries** — Each route has `ErrorBoundary` export for graceful error handling
+- [ ] **Optimistic UI** — Using `useNavigation`/`useFetcher` for optimistic updates during mutations
+
+### SolidJS
+- [ ] **Fine-grained signals** — Using `createSignal`, `createMemo`, `createEffect` — not React-style re-renders
+- [ ] **No virtual DOM assumptions** — Components run once; reactivity via signals, not re-execution
+- [ ] **createResource** — Server data fetching with `createResource`, not manual fetch in effects
+- [ ] **Show/For/Switch** — Using Solid's control flow components (`<Show>`, `<For>`, `<Switch>`) not ternaries
+- [ ] **Store patterns** — Using `createStore` for nested reactive state, not nested signals
+
+### Hono
+- [ ] **Web Standards** — Using standard `Request`/`Response`, not framework-specific abstractions
+- [ ] **Middleware chains** — Auth, CORS, logging as composable middleware, not inline in handlers
+- [ ] **Multi-runtime** — Tested on target runtimes (Cloudflare Workers, Deno, Bun, Node.js)
+- [ ] **Validator middleware** — Using `hono/validator` with Zod for request validation, not manual parsing
+- [ ] **Type-safe routes** — Using RPC mode or typed route parameters for client-server type safety
+
+### Ruby / Rails
+- [ ] **Active Record patterns** — Proper scopes, validations, callbacks; no raw SQL without justification
+- [ ] **N+1 prevention** — Using `includes`/`eager_load`/`preload`, verified with Bullet gem
+- [ ] **Hotwire / Turbo** — Turbo Frames and Turbo Streams for dynamic UI, not heavy JS frameworks
+- [ ] **Rails conventions** — Following Rails 8 conventions (Solid Queue, Solid Cache, Kamal deploy)
+- [ ] **Security** — Strong parameters, CSRF protection, Content Security Policy headers configured
+
+### Elixir / Phoenix
+- [ ] **OTP patterns** — GenServer, Supervisor trees used correctly; processes not used as global mutable state
+- [ ] **LiveView** — Using LiveView for real-time UI, proper handle_event/handle_info separation
+- [ ] **Fault tolerance** — "Let it crash" philosophy: supervisors restart failed processes, not defensive try/catch everywhere
+- [ ] **Contexts** — Business logic in Phoenix Contexts (bounded contexts), not in controllers or LiveView
+- [ ] **Ecto patterns** — Changesets for validation, preloads for associations, no N+1 queries
+
+### C / C++
+- [ ] **Memory safety** — RAII for resource management, smart pointers (`unique_ptr`, `shared_ptr`), no raw `new`/`delete`
+- [ ] **Modern C++ (20/23)** — Using ranges, concepts, `std::format`, `std::expected`, coroutines where beneficial
+- [ ] **No undefined behavior** — No dangling pointers, buffer overflows, use-after-free; sanitizers (ASan, UBSan) clean
+- [ ] **Build system** — CMake with proper targets, no global include/link; dependencies via vcpkg/Conan
+- [ ] **Static analysis** — clang-tidy clean, no suppressed warnings without justification
+
+### Swift
+- [ ] **Structured concurrency** — Using `async`/`await`, `TaskGroup`, actors for concurrency; no raw GCD unless necessary
+- [ ] **Protocol-oriented design** — Protocols over class inheritance, extensions for shared behavior
+- [ ] **SwiftUI lifecycle** — Using `@Observable` (not `ObservableObject`), `@State`, `@Environment` correctly
+- [ ] **Error handling** — Typed throws (Swift 6), `Result` type for async boundaries, no force unwraps in production
+- [ ] **Memory management** — `[weak self]` in closures, no retain cycles, Instruments leak-free
+
+### Kotlin
+- [ ] **Coroutines** — Structured concurrency with `CoroutineScope`, proper `Dispatchers`, no `GlobalScope`
+- [ ] **Null safety** — No `!!` (force unwrap) in production code, `?.let {}` / `?:` for null handling
+- [ ] **Multiplatform** — Shared code in `commonMain`, platform-specific in `expect`/`actual` (if KMP project)
+- [ ] **Sealed classes** — Using sealed classes/interfaces for exhaustive `when` expressions in state/event modeling
+- [ ] **Flow** — Using `StateFlow`/`SharedFlow` for reactive streams, not LiveData in new code
+
 ### Vanilla HTML / JS / CSS
 - [ ] **Progressive enhancement** — Works without JS where possible
 - [ ] **Semantic HTML** — Correct elements, proper heading hierarchy, landmark regions

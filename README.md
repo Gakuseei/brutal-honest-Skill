@@ -1,7 +1,7 @@
 # brutal-honest
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2.0.0-red?style=for-the-badge&logo=semver&logoColor=white" alt="Version">
+  <img src="https://img.shields.io/badge/version-2.1.0-red?style=for-the-badge&logo=semver&logoColor=white" alt="Version">
   <img src="https://img.shields.io/badge/last_updated-2026--02--22-blue?style=for-the-badge" alt="Last Updated">
   <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License">
   <img src="https://img.shields.io/badge/status-stable-brightgreen?style=for-the-badge" alt="Status">
@@ -119,6 +119,11 @@ Auto-detects and applies relevant checklists. Only stack-specific items for dete
 | **Remix** | `package.json` with `@remix-run` | Remix-specific patterns |
 | **SolidJS** | `package.json` with `solid-js` | Solid-specific patterns |
 | **Hono** | `package.json` with `hono` | Hono-specific patterns |
+| **Ruby / Rails** | `Gemfile` with `rails` | Active Record, Hotwire/Turbo, Rails 8 conventions |
+| **Elixir / Phoenix** | `mix.exs` | OTP/GenServer, LiveView, supervision trees |
+| **C / C++** | `CMakeLists.txt` / `*.cpp` + `Makefile` | RAII, smart pointers, modern C++20/23 |
+| **Swift / iOS** | `Package.swift` / `*.xcodeproj` | Structured concurrency, protocol-oriented design |
+| **Kotlin** | `build.gradle.kts` with `kotlin` | Coroutines, null safety, multiplatform |
 | **Vanilla HTML/JS/CSS** | Standalone `.html` files | Progressive enhancement, semantic HTML, Web Standards |
 
 **Multi-stack projects:** If multiple config files are detected (e.g., monorepo with React frontend + Python API), all matching stack checklists are applied.
@@ -305,6 +310,12 @@ Applied on top of the universal checklist. Each stack gets 4-7 framework-specifi
 ---
 
 ## Changelog
+
+### 2.1.0 (2026-02-22)
+
+- Added 10 new stack-specific checklists: Astro, Remix, SolidJS, Hono, Ruby/Rails, Elixir/Phoenix, C/C++, Swift, Kotlin
+- Detection table expanded from 16 to 22 stacks
+- Each new stack has 5 concrete checklist items with framework-specific patterns and anti-patterns
 
 ### 2.0.0 (2026-02-22)
 
