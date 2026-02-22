@@ -34,6 +34,32 @@ document.startViewTransition(() => updateDOM());
 }
 ```
 
+### CSS 2026 Features
+```css
+/* CSS if() function — conditional values */
+.card { padding: if(style(--compact: true), 0.5rem, 1.5rem); }
+
+/* sibling-index() — positional styling without nth-child hacks */
+.item { opacity: calc(1 - sibling-index() * 0.1); }
+
+/* Scroll State Queries — style based on scroll position */
+@container scroll-state(scrollable: top) {
+  .header { box-shadow: none; }
+}
+
+/* corner-shape — squircle and other shapes */
+.card { corner-shape: superellipse; border-radius: 1rem; }
+
+/* Customizable <select> — native dropdown styling */
+select, select::picker(select) {
+  appearance: base-select;
+}
+select::picker(select) {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+```
+
 ## Visual Hierarchy
 
 ### 60-30-10 Color Rule
@@ -46,11 +72,11 @@ document.startViewTransition(() => updateDOM());
 ```css
 h1: clamp(2.5rem, 5vw, 4rem)     /* Hero */
 h2: clamp(1.5rem, 3vw, 2.5rem)   /* Section */
-h3: 1.25rem                        /* Card Title */
-body: 1rem                         /* Base */
-small: 0.875rem                    /* Meta */
+h3: 1.25rem                       /* Card Title */
+body: 1rem                        /* Base */
+small: 0.875rem                   /* Meta */
 ```
-**Rule:** Max 6 sizes, never px, always rem.
+**Rule:** Max 6 sizes, prefer rem over px.
 
 ### Spacing System (4px Grid)
 ```css
@@ -61,7 +87,7 @@ small: 0.875rem                    /* Meta */
 --space-5: 2rem;     /* 32px */
 --space-6: 3rem;     /* 48px */
 ```
-**Check:** Every spacing must be divisible by 4.
+**Check:** Every spacing should be on a consistent scale.
 
 ## Interaction Design
 
@@ -78,9 +104,9 @@ small: 0.875rem                    /* Meta */
 
 ### Loading States (No Spinner Spam)
 **Skeleton > Spinner > Blank**
-```tsx
-// Good Skeleton: Content shape visible
-<div className="skeleton" style={{ height: '1em', width: '60%' }} />
+```html
+<!-- Good Skeleton: Content shape visible -->
+<div class="skeleton" style="height: 1em; width: 60%;"></div>
 ```
 
 ### Focus States (WCAG 2.2 AAA)
@@ -93,32 +119,30 @@ small: 0.875rem                    /* Meta */
 ```
 **Critical:** Without focus-visible it's an accessibility fail in 2026.
 
-## AI-Native UI (2026 Standard)
+## AI-Native UI (applies to AI chat applications only)
 
 ### Chat Interface Architecture
-```tsx
-<ChatContainer>
-  <MessageList>
-    <MessageGroup user="human">
-      <MessageContent />
-    </MessageGroup>
-    <MessageGroup user="ai">
-      <AIHeader model="gpt-4" timestamp />
-      <StreamingContent /> {/* Streaming dots during generation */}
-      <AIActions>
-        <CopyButton />
-        <RegenerateButton />
-        <VariantButton /> {/* A/B Variants */}
-      </AIActions>
-    </MessageGroup>
-  </MessageList>
-  <Composer>
-    <AttachmentDropzone />
-    <Textarea autoResize />
-    <ModelSelector />
-    <SendButton disabled={!input || isLoading} />
-  </Composer>
-</ChatContainer>
+```html
+<div class="chat-container">
+  <div class="message-list">
+    <div class="message-group" data-user="human">
+      <div class="message-content">...</div>
+    </div>
+    <div class="message-group" data-user="ai">
+      <div class="ai-header"><!-- model, timestamp --></div>
+      <div class="streaming-content"><!-- Streaming dots during generation --></div>
+      <div class="ai-actions">
+        <button class="copy-btn">Copy</button>
+        <button class="regenerate-btn">Regenerate</button>
+      </div>
+    </div>
+  </div>
+  <div class="composer">
+    <div class="attachment-dropzone"></div>
+    <textarea autoresize></textarea>
+    <button class="send-btn" disabled>Send</button>
+  </div>
+</div>
 ```
 
 ### Streaming States
@@ -137,30 +161,60 @@ small: 0.875rem                    /* Meta */
 }
 ```
 
-## Common Anti-Patterns (What must be destroyed)
+## Mobile UI Patterns (applies to native/hybrid mobile apps)
 
-❌ **Rainbow Gradients:** More than 2 colors in gradient = 2019
-❌ **Box-Shadow everywhere:** Only on Hover/Active, never static
-❌ **Border-Radius 50% on rectangles:** Always looks like shit
-❌ **System Fonts:** Inter/Geist are 2026 standard
-❌ **Placeholder text as label:** Accessibility disaster
-❌ **Infinite Scroll:** Pagination or "Load More" is better
+### Touch Targets
+- Minimum 44x44pt (iOS) / 48x48dp (Android) tap targets
+- Adequate spacing between interactive elements (8dp minimum)
+
+### Safe Areas
+- Respect device safe areas (notch, home indicator, status bar)
+- Content should never be clipped by hardware features
+
+### Navigation
+- Bottom navigation for top-level destinations (max 5 items)
+- Back gesture / swipe-to-go-back support
+- Tab bar stays visible during scroll
+
+### Platform Conventions
+- iOS: Large titles, SF Symbols, swipe actions, haptic feedback on meaningful actions
+- Android: Material 3 tokens, FAB for primary action, edge-to-edge layout, predictive back gesture
+
+### Performance
+- 60fps scrolling — no jank during list rendering
+- Pull-to-refresh for refreshable content
+- Optimistic UI updates for user actions
+- Skeleton screens during data loading (not spinners)
+
+---
+
+## Common Anti-Patterns (context-dependent)
+
+**Always wrong:**
+- Rainbow Gradients (>2 colors in a gradient)
+- Box-Shadow on every static element (only on hover/active)
+- Border-Radius 50% on rectangles
+- Placeholder text as label (accessibility violation)
+
+**Context-dependent — NOT always wrong:**
+- **System fonts vs custom fonts:** System font stacks (`system-ui, -apple-system, sans-serif`) have zero FOIT/FOUT, zero CLS, zero network requests, and instant rendering. They are a valid choice for performance-critical apps, dashboards, and tools. Custom fonts (Inter, Geist, etc.) are better for brand-heavy marketing sites and design-forward apps. Neither is universally "correct."
+- **Infinite scroll vs pagination:** Virtual/infinite scroll is standard and expected for social feeds, chat interfaces, activity logs, and real-time data streams. Pagination is better for searchable, filterable, bookmarkable content (e-commerce, documentation, search results). "Load More" buttons are a middle ground. Judge by use case, not by blanket rule.
 
 ## Checklist for UI Review
 
 - [ ] 60-30-10 color rule followed?
 - [ ] Typography scale consistent?
-- [ ] All spacing divisible by 4?
-- [ ] View Transitions on navigation?
-- [ ] Anchor Positioning for tooltips?
+- [ ] All spacing on a consistent scale?
+- [ ] View Transitions on navigation? (where supported)
 - [ ] Focus states visible?
-- [ ] Loading States > Spinner?
+- [ ] Loading states better than spinners?
 - [ ] Micro-animations < 200ms?
-- [ ] Dark Mode system preference?
-- [ ] No rainbow gradients?
+- [ ] Dark mode / system preference respected?
+- [ ] No accessibility violations in interactive elements?
+- [ ] Font strategy appropriate for the project type?
 
 **Tone for UI failures:**
-- "This looks like a Bootstrap template from 2018"
+- "This looks like a template from 2018"
 - "Color palette is giving migraine"
 - "Spacing is random, not systematic"
-- "Accessibility: Blind users will sue you"
+- "Accessibility: Screen reader users will have a terrible experience"
