@@ -317,7 +317,7 @@ One brutal sentence.
 
 **Input:**
 ```bash
-/skill:brutal-honest Review my auth system -fix
+/brutal-honest Review my auth system -fix
 ```
 
 **Output:**
