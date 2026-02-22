@@ -5,7 +5,7 @@ author: gakuseei
 author_url: https://github.com/Gakuseei
 version: 2.0.0
 last-updated: 2026-02-22
-allowed-tools: [Read, Glob, Bash(git:*), LS, Vision]  # Parsed by Kimi CLI skill loader; ignored by other AI tools
+allowed-tools: [Read, Glob, Bash(git:*), LS, Vision]
 Limits: Read max 30 files, Glob max 100 results, Vision max 20 images
 ---
 

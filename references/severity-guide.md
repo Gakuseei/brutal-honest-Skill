@@ -48,4 +48,4 @@ Nitpick, but fix it.
 
 ---
 
-**Tone:** Direct. "This framework version was current two years ago. We're in 2026."
+**Tone:** Direct. "This framework version is 2+ major releases behind current stable. Update or justify."
