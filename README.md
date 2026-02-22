@@ -128,9 +128,10 @@ brutal-honest/
 ```
 
 **How it works:**
-1. Try loading external `references/*.md` files (for customization)
-2. If not found -> use embedded defaults (guaranteed to work)
-3. External files override embedded (your custom rules take precedence)
+1. AI loads `references/*.md` files (full-detail, with code examples)
+2. If not found → falls back to embedded defaults in SKILL.md (compressed, no code examples)
+3. `references/` files are the **customization layer** — edit them to add your own rules, severity definitions, or UI patterns without touching SKILL.md
+4. Delete a `references/` file → skill uses embedded fallback for that section (never breaks)
 
 ## AI Model Compatibility
 
