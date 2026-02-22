@@ -20,16 +20,16 @@ cp -r brutal-honest ./.agents/skills/
 
 ```bash
 # Basic review
-/skill:brutal-honest Review my auth system
+/brutal-honest Review my auth system
 
 # With fix prompt (generates FIX-PROMPT section)
-/skill:brutal-honest Review my API -fix
+/brutal-honest Review my API -fix
 
 # With feature ideas (generates FEATURE-PROMPT section)
-/skill:brutal-honest Review my app -features
+/brutal-honest Review my app -features
 
 # Both (3 distinct sections: Review -> Fix -> Features)
-/skill:brutal-honest Review my project -fix -features
+/brutal-honest Review my project -fix -features
 ```
 
 ## Supported Stacks
@@ -91,7 +91,7 @@ Works with any tech stack. Auto-detects and applies relevant checklists:
 ## Example
 
 ```bash
-/skill:brutal-honest Review my auth system -fix
+/brutal-honest Review my auth system -fix
 ```
 
 Output:
@@ -106,7 +106,7 @@ Security Swiss cheese. Fix CRITICAL before prod.
 
 ### FIX-PROMPT
 "Fix auth system:
-app.js:12 Move API_KEY to .env
+config.js:12 Move API_KEY to .env
 Rules: NO AI comments, test after change"
 ```
 
