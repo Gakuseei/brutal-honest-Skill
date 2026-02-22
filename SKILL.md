@@ -3,7 +3,7 @@ name: brutal-honest
 description: Ruthless expert analysis for code/UI/architecture. Tech-stack agnostic.
 author: gakuseei
 author_url: https://github.com/Gakuseei
-version: 2.0.0
+version: 2.1.0
 last-updated: 2026-02-22
 allowed-tools: [Read, Glob, Bash(git:*), LS, Vision]
 Limits: Read max 30 files, Glob max 100 results, Vision max 20 images
@@ -49,6 +49,11 @@ Detect the project's tech stack before applying any checklist. This determines w
 | `package.json` with `"@remix-run"` | Remix | Remix-specific + Universal |
 | `package.json` with `"solid-js"` | SolidJS | Solid-specific + Universal |
 | `package.json` with `"hono"` | Hono | Hono-specific + Universal |
+| `Gemfile` with `rails` | Ruby/Rails | Rails-specific + Universal |
+| `mix.exs` | Elixir/Phoenix | Elixir-specific + Universal |
+| `CMakeLists.txt` / `*.cpp` + `Makefile` | C/C++ | C/C++-specific + Universal |
+| `Package.swift` / `*.xcodeproj` | Swift/iOS | Swift-specific + Universal |
+| `build.gradle.kts` with `kotlin` | Kotlin (native/multiplatform) | Kotlin-specific + Universal |
 | `*.html` (standalone, no framework) | Vanilla HTML/JS/CSS | Web standards + Universal |
 | No recognizable config | Ask user | — |
 
@@ -63,7 +68,7 @@ Detect the project's tech stack before applying any checklist. This determines w
 **Files/Folders:**
 - Single file: Read it
 - Multiple files:
-  - Glob: Use pattern appropriate to detected stack. Default: `**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,css,py,go,rs,java,kt,php,rb,cs,dart,swift}`
+  - Glob: Use pattern appropriate to detected stack. Default: `**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,css,py,go,rs,java,kt,php,rb,cs,dart,swift,ex,exs,cpp,hpp,c,h,erl}`
   - Prioritize: 1) Config files (package.json, pyproject.toml, go.mod, etc.) 2) Entry points 3) Core logic
   - Max 30 files: If more, analyze entry points + configs only
 - Images: Analyze pixel-perfect for colors, contrast, typography, spacing
@@ -167,6 +172,15 @@ Use this if `references/checklists.md` not found.
 **Go:** Error handling patterns (errors.Is/As), goroutine management, interfaces, go vet/staticcheck
 **Rust:** Ownership patterns, error handling (Result/Option), unsafe audit, clippy clean
 **PHP/Laravel:** Eloquent patterns, middleware, queue patterns, Laravel 12 features
+**Astro:** Content Collections, island architecture, zero-JS by default, View Transitions
+**Remix:** Loaders/actions, nested routes, progressive enhancement, error boundaries
+**SolidJS:** Fine-grained signals, no virtual DOM, createResource, JSX without re-renders
+**Hono:** Web Standards (Request/Response), middleware chains, edge-first, multi-runtime
+**Ruby/Rails:** Active Record patterns, concerns, Hotwire/Turbo, N+1 prevention, Rails 8 conventions
+**Elixir/Phoenix:** OTP/GenServer patterns, LiveView, fault tolerance, supervision trees
+**C/C++:** RAII, smart pointers, memory safety, modern C++20/23, no raw new/delete
+**Swift:** Structured concurrency (async/await, actors), protocol-oriented design, SwiftUI vs UIKit
+**Kotlin:** Coroutines, null safety, multiplatform patterns, sealed classes, Flow
 **Vanilla HTML/JS/CSS:** Progressive enhancement, semantic HTML, no-build patterns, Web Standards
 
 ---
@@ -296,6 +310,12 @@ Priority: [High/Medium/Low with rationale]
 - Only apply stack-specific checklist items when that stack is detected
 
 ## Changelog
+
+### 2.1.0 (2026-02-22)
+- Added 10 new stack-specific checklists: Astro, Remix, SolidJS, Hono, Ruby/Rails, Elixir/Phoenix, C/C++, Swift, Kotlin
+- Detection table expanded from 16 to 22 stacks
+- Each new stack has 5 concrete checklist items with framework-specific patterns and anti-patterns
+- Glob pattern extended for .ex, .exs, .cpp, .hpp, .c, .h, .erl
 
 ### 2.0.0 (2026-02-22)
 - Rewrote entire skill to be tech-stack agnostic (was React/Next.js-only)
