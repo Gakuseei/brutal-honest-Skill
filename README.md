@@ -4,7 +4,7 @@
 
 **AI skill for ruthless code review. No sugarcoating. Any tech stack.**
 
-[![Version](https://img.shields.io/badge/v2.4.0-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
+[![Version](https://img.shields.io/badge/v2.5.0-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 [![Stacks](https://img.shields.io/badge/31+_stacks-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 [![AI Agnostic](https://img.shields.io/badge/any_LLM-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 
@@ -16,7 +16,7 @@ Categorized by severity. Zero fluff.
 
 </div>
 
-<br>
+> **v2.5.0** — Python detection split (Django/FastAPI/generic), monorepo handling, Vision tool docs, repo hygiene. [Changelog](./SKILL.md#changelog)
 
 ## Quick Start
 
@@ -32,6 +32,16 @@ cp -r brutal-honest ./.agents/skills/
 
 # Any LLM — paste SKILL.md as system context
 ```
+
+## Why This?
+
+You can paste code into any LLM and ask "review this." Here's why that's worse:
+
+**Generic LLM review** — vague feedback, misses framework-specific issues, no severity ranking, no fix prompts, different answer every time.
+
+**brutal-honest** — auto-detects your stack, applies 31+ framework-specific checklists, categorizes every finding by severity, generates copy-paste fix prompts, verifies implementations against git history. Same ruthless standard every run.
+
+No config. No setup. No dashboard. Just `/brutal-honest` and the truth.
 
 ## Usage
 

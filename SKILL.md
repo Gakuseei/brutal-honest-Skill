@@ -3,7 +3,7 @@ name: brutal-honest
 description: Ruthless expert analysis for code/UI/architecture. Tech-stack agnostic.
 author: gakuseei
 author_url: https://github.com/Gakuseei
-version: 2.4.0
+version: 2.5.0
 last-updated: 2026-02-23
 allowed-tools: [Read, Glob, Grep, Bash, Vision]
 ---
@@ -37,7 +37,9 @@ Detect the project's tech stack before applying any checklist. This determines w
 | `package.json` with `"vue"` | Vue/Nuxt | Vue-specific + Universal |
 | `package.json` with `"svelte"` | Svelte/SvelteKit | Svelte-specific + Universal |
 | `package.json` with `"@angular"` | Angular | Angular-specific + Universal |
-| `requirements.txt` / `pyproject.toml` | Python | Python-specific + Universal |
+| `requirements.txt` / `pyproject.toml` with `django` | Python (Django) | Python (Django) + Universal |
+| `requirements.txt` / `pyproject.toml` with `fastapi` | Python (FastAPI) | Python (FastAPI) + Universal |
+| `requirements.txt` / `pyproject.toml` (no django/fastapi) | Python (generic) | Universal only |
 | `go.mod` | Go | Go-specific + Universal |
 | `Cargo.toml` | Rust | Rust-specific + Universal |
 | `composer.json` | PHP/Laravel | PHP-specific + Universal |
@@ -73,7 +75,7 @@ Detect the project's tech stack before applying any checklist. This determines w
 
 ## Input Handling
 
-**Context Awareness:** Check for framework config files (package.json, pyproject.toml, go.mod, etc.) to detect versions. Flag outdated framework versions (2+ major versions behind current stable). Always check current stable version of the detected framework.
+**Context Awareness:** Check for framework config files (package.json, pyproject.toml, go.mod, etc.) to detect versions. Flag outdated framework versions (2+ major versions behind current stable). (Exception: game engines — LTS versions are standard; only flag end-of-life or unsupported versions.) Always check current stable version of the detected framework.
 
 **Files/Folders:**
 - Single file: Read it
@@ -81,7 +83,8 @@ Detect the project's tech stack before applying any checklist. This determines w
   - Glob: Use pattern appropriate to detected stack. Default: `**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,css,py,go,rs,java,kt,php,rb,cs,dart,swift,ex,exs,cpp,hpp,c,h,erl,gd,tscn,tres,unity,uproject,lua}`
   - Prioritize: 1) Config files (package.json, pyproject.toml, go.mod, etc.) 2) Entry points 3) Core logic
   - Max 30 files: If more, analyze entry points + configs only
-- Images: Analyze pixel-perfect for colors, contrast, typography, spacing
+  - Monorepos: If >3 config files detected at different paths, treat as multi-project. Analyze workspace root config + one entry point per sub-project. Distribute the 30-file limit proportionally. When user specifies a sub-project, focus on that one.
+- Images: Use Vision tool to analyze screenshots/mockups for colors, contrast, typography, spacing, layout issues. Supports PNG, JPG, WebP. If no image provided, skip.
 
 ## Reference Loading
 
@@ -94,7 +97,7 @@ Detect the project's tech stack before applying any checklist. This determines w
 2. `references/checklists.md` → If NOT FOUND, use "Embedded Checklists" below
 3. `references/ui-patterns.md` → If NOT FOUND, use "Embedded UI Patterns" below
 
-**STEP 3: If files found, merge with embedded**
+**STEP 3: If files found, external overrides embedded; fill gaps with embedded defaults**
 - External files OVERRIDE embedded defaults (for customization)
 - If external incomplete, fill gaps with embedded
 
@@ -218,7 +221,7 @@ Use this if `references/checklists.md` not found.
 **Phaser/Web 2D:** Scene lifecycle, sprite batching via texture atlases, audio context gesture handling, object pooling, WebGL context management
 **Three.js/Web 3D:** WebGPU with WebGL 2 fallback, InstancedMesh for repeated geometry, dispose() for GPU memory, frame budget with delta time, frustum culling + LOD
 **Bevy:** ECS architecture, Required Components (0.15+), AssetServer loading, plugin architecture, system scheduling with .before()/.after()
-**Pygame/Love2D/Raylib:** Fixed timestep game loop, assets loaded once at init, input abstraction with rebinding, no per-frame allocations, game state machine
+**Pygame/Love2D:** Fixed timestep game loop, assets loaded once at init, input abstraction with rebinding, no per-frame allocations, game state machine
 **Web Canvas Game:** Worker thread offloading (sim in Worker, render on main), zero-copy ArrayBuffer transfer, TypedArray hot data (Int32Array/Float32Array for counters and spatial indices), adaptive quality auto-tuning, GC-free hot path (ring buffers, object pooling, swap-and-pop, dirty tracking)
 
 ---
@@ -330,7 +333,7 @@ Match commit subjects against these patterns (case-insensitive, checked in order
 ### Fallback Chain (if no patterns match)
 
 1. All commits since last tag (`git describe --tags --abbrev=0`)
-2. No tags → all commits since branch-point vs main/master (`git merge-base HEAD main`)
+2. No tags → all commits since branch-point vs main (try master if main not found, then default branch) (`git merge-base HEAD main`)
 3. No branch-point → last 5 commits
 
 ### Plan-Item Extraction
@@ -339,6 +342,7 @@ From each phase commit's body (`git log -1 --format="%b" <hash>`):
 - Lines starting with `-`, `*`, `+` = individual plan items
 - Non-empty, non-bullet lines = also plan items (one per line)
 - Empty commit body → subject line = single item
+- If commit body mixes prose paragraphs with bullet lists, extract only lines starting with `-`, `*`, `+`. Ignore prose lines (>80 chars without a leading bullet marker).
 - Strip leading markers and whitespace before using as search keywords
 
 ---
@@ -517,6 +521,7 @@ Priority: [High/Medium/Low with rationale]
 - **No git repo (`-check`):** "Not a git repository. `-check` needs commit history to verify against."
 - **No phase commits (`-check`):** "No phase commits found. Use `-check N` to specify how many recent commits to verify, or write commit messages with 'Phase N:' / 'Step N:' prefixes."
 - **Empty commit bodies (`-check`):** "Commit bodies are empty — using subject lines as single items per phase. For better verification, write detailed commit messages with bullet-point plan items."
+- **Image error:** "Image format not supported or image not found."
 
 ## Rules
 
@@ -530,6 +535,20 @@ Priority: [High/Medium/Low with rationale]
 - When a game engine is detected, suppress web-only rules (Core Web Vitals, landing page patterns, anti-AI-slop font/gradient rules, lazy loading, CI/CD as MEDIUM). Apply game-specific performance metrics and patterns instead.
 
 ## Changelog
+
+### 2.5.0 (2026-02-23)
+- Split Python detection into 3 rows: Python (Django), Python (FastAPI), Python (generic) — eliminates dangling sync-point references
+- Renamed Pygame/Love2D/Raylib checklist to Pygame/Love2D — Raylib had no detection logic
+- Added monorepo handling guidance: >3 config files triggers multi-project analysis with proportional file limits
+- Documented Vision tool usage for screenshot/mockup analysis (PNG, JPG, WebP)
+- Added game engine version exception to Input Handling (LTS versions are standard, only flag end-of-life)
+- Clarified plan-item extraction: mixed prose/bullet commits now extract bullets only (>80 char prose lines ignored)
+- Clarified git merge-base fallback chain: tries main, then master, then default branch
+- Improved Reference Loading wording: "external overrides embedded; fill gaps with embedded defaults"
+- Added image error message to Error Messages section
+- Added "Why This?" differentiation section to README
+- Added "What's New" line to README
+- Added .gitignore and CONTRIBUTING.md for repo hygiene
 
 ### 2.4.0 (2026-02-23)
 - Added `-check` flag: Post-mortem verification of implementation against git commit history
