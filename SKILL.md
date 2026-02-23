@@ -3,7 +3,7 @@ name: brutal-honest
 description: Ruthless expert analysis for code/UI/architecture. Tech-stack agnostic.
 author: gakuseei
 author_url: https://github.com/Gakuseei
-version: 2.6.0
+version: 2.7.2
 last-updated: 2026-02-23
 allowed-tools: [Read, Glob, Grep, Bash, Vision]
 ---
@@ -11,17 +11,6 @@ allowed-tools: [Read, Glob, Grep, Bash, Vision]
 # brutal-honest
 
 Ruthless senior-level analysis. No sugarcoating. Works with any tech stack.
-
-## AI Model Compatibility
-
-This skill is AI-model agnostic. It works with any LLM that supports skill/prompt loading:
-- Claude (Opus, Sonnet, Haiku) via Claude Code skills
-- GPT (4.x, 5.x, Codex) via custom instructions or system prompts
-- Gemini (2.x, 3.x Pro) via gems or system instructions
-- Kimi (K2.5+) via Kimi CLI skills
-- DeepSeek, Grok, or any other model — paste SKILL.md as system context
-
-No vendor-specific paths or APIs are assumed.
 
 ## When to Use
 
@@ -45,7 +34,7 @@ Detect the project's tech stack before applying any checklist. This determines w
 | `composer.json` | PHP/Laravel | PHP-specific + Universal |
 | `pom.xml` / `build.gradle` | Java/Kotlin | JVM-specific + Universal |
 | `*.csproj` / `*.sln` | C#/.NET | .NET-specific + Universal |
-| `pubspec.yaml` | Flutter/Dart | Flutter-specific + Universal |
+| `pubspec.yaml` | Flutter/Dart | Flutter-specific + Mobile + Universal |
 | `astro.config.*` | Astro | Astro-specific + Universal |
 | `package.json` with `"@remix-run"` | Remix | Remix-specific + Universal |
 | `package.json` with `"solid-js"` | SolidJS | Solid-specific + Universal |
@@ -53,9 +42,10 @@ Detect the project's tech stack before applying any checklist. This determines w
 | `Gemfile` with `rails` | Ruby/Rails | Rails-specific + Universal |
 | `mix.exs` | Elixir/Phoenix | Elixir-specific + Universal |
 | `CMakeLists.txt` / `*.cpp` + `Makefile` | C/C++ | C/C++-specific + Universal |
-| `Package.swift` / `*.xcodeproj` | Swift/iOS | Swift-specific + Universal |
+| `Package.swift` / `*.xcodeproj` | Swift/iOS | Swift-specific + Mobile + Universal |
 | `build.gradle.kts` with `kotlin` | Kotlin (native/multiplatform) | Kotlin-specific + Universal |
 | `*.html` (standalone, no framework) | Vanilla HTML/JS/CSS | Web standards + Universal |
+| `package.json` with `"react-native"` | React Native | Mobile + Universal |
 | `Assets/` + `ProjectSettings/` + `*.unity` | Unity | Unity-specific + Game + Universal |
 | `*.uproject` | Unreal Engine | Unreal-specific + Game + Universal |
 | `project.godot` | Godot | Godot-specific + Game + Universal |
@@ -75,7 +65,7 @@ Detect the project's tech stack before applying any checklist. This determines w
 
 ## Input Handling
 
-**Context Awareness:** Check for framework config files (package.json, pyproject.toml, go.mod, etc.) to detect versions. Flag outdated framework versions (2+ major versions behind current stable). (Exception: game engines — LTS versions are standard; only flag end-of-life or unsupported versions.) Always check current stable version of the detected framework.
+**Context Awareness:** Check for framework config files (package.json, pyproject.toml, go.mod, etc.) to detect versions. Flag outdated framework versions (2+ major versions behind current stable). (Exception: game engines — LTS versions are standard; only flag end-of-life or unsupported versions.) Check current stable version of the detected framework using available tools or training knowledge — flag anything 2+ major versions behind; if unable to verify, state the assumption.
 
 **Files/Folders:**
 - Single file: Read it
@@ -162,38 +152,51 @@ Use this if `references/checklists.md` not found.
 ### Universal Checklist (applies to ALL projects)
 
 **Security:**
-- [ ] No secrets in code — API keys in env vars / secret manager only
-- [ ] Input validation — Validate at system boundaries (user input, external APIs)
-- [ ] Injection prevention — ORM / parameterized queries / sanitized output
+- [ ] No secrets in code — API keys, tokens, passwords in env vars / secret manager only
+- [ ] Input validation — Validate at system boundaries (user input, external APIs, file uploads)
+- [ ] Injection prevention — ORM / parameterized queries / sanitized output (SQL, XSS, command injection)
 - [ ] Dependency audit clean — No known CVEs
-- [ ] AI security (if applicable) — Prompt injection prevention, LLM output sanitization
+- [ ] CSRF protection — Anti-forgery tokens or SameSite cookies (web apps)
+- [ ] Auth best practice — OAuth 2.1, OIDC, or framework-recommended auth patterns
+- [ ] AI security (if applicable) — Prompt injection prevention, LLM output sanitization, AI tool permissions gated
 
 **Performance:**
 - [ ] Appropriate for platform — Web: Core Web Vitals (LCP ≤2.5s, INP ≤200ms, CLS ≤0.1) | Games: 60fps (16.6ms frame budget), consistent frame pacing | Mobile: startup <2s | API: p95 <200ms
-- [ ] No unnecessary computation — Caching, lazy loading, pagination where appropriate
-- [ ] Asset optimization — Images, fonts, bundle sizes appropriate for target
+- [ ] Asset optimization — Images (modern formats), fonts (font-display: swap), bundle sizes appropriate for target
+- [ ] Caching strategy — HTTP caching, application-level caching, CDN where appropriate
+- [ ] Lazy loading — Below-fold content, heavy dependencies, routes/pages loaded on demand (not applicable to games)
+- [ ] No unnecessary computation — Database queries optimized, N+1 queries eliminated, pagination for large datasets
 
 **Architecture:**
-- [ ] Separation of concerns — No God objects/functions
-- [ ] Clean dependency graph — No circular dependencies
+- [ ] Separation of concerns — No God objects/functions, clear module boundaries
+- [ ] Clean dependency graph — No circular dependencies, clear import direction
 - [ ] DRY without over-abstraction — Repeated code extracted, but no premature abstraction
-- [ ] Error handling — Graceful failures, user-facing error messages, logging
+- [ ] Error handling — Graceful failures, user-facing error messages, structured logging
+- [ ] Configuration management — Environment-specific config separated from code
+- [ ] Database patterns — Connection pooling, migrations versioned, proper ORM usage (if applicable)
 
 **Testing:**
-- [ ] Unit tests exist for core logic
-- [ ] Integration tests for critical paths
-- [ ] E2E tests for key user flows (where applicable)
+- [ ] Unit tests — Core business logic covered with meaningful assertions
+- [ ] Integration tests — Critical paths tested (API endpoints, database operations, auth flows)
+- [ ] E2E tests — Key user flows covered (where applicable)
+- [ ] Test isolation — Tests don't depend on external services or shared state
+- [ ] Coverage strategy — Coverage thresholds defined for critical modules (not vanity 100%)
+- [ ] Mocking boundaries — External services mocked at integration boundary, not deep internals
+- [ ] Test naming — Test names describe behavior, not implementation
 
 **CI/CD:**
 - [ ] Automated builds — Build runs on every PR
 - [ ] Linting/formatting — Enforced in CI, not just local
 - [ ] Tests run on PR — Failing tests block merge
+- [ ] Deployment strategy — Automated deploy with rollback capability
 
 **Accessibility (web/mobile):**
-- [ ] WCAG 2.2 compliance — Focus rings, keyboard nav
-- [ ] Semantic markup — Correct elements for their purpose
-- [ ] Color contrast — 4.5:1 minimum
+- [ ] WCAG 2.2 compliance — Focus rings, keyboard navigation, screen reader support
+- [ ] Semantic markup — Correct elements for their purpose (button not div, nav not div, etc.)
+- [ ] ARIA labels — Interactive elements accessible, landmarks defined
+- [ ] Color contrast — 4.5:1 minimum for normal text, 3:1 for large text
 - [ ] Reduced motion — Respect prefers-reduced-motion
+- [ ] Focus management — Focus trap in modals, return focus on close
 
 ### Stack-Specific (applied ONLY when detected)
 
@@ -215,6 +218,7 @@ Use this if `references/checklists.md` not found.
 **Swift:** Structured concurrency (async/await, actors), protocol-oriented design, SwiftUI vs UIKit
 **Kotlin:** Coroutines, null safety, multiplatform patterns, sealed classes, Flow
 **Vanilla HTML/JS/CSS:** Progressive enhancement, semantic HTML, no-build patterns, Web Standards
+**Mobile (React Native / Flutter / SwiftUI):** Platform conventions (iOS HIG / Material Design), framework navigation, appropriate state management, 60fps scrolling, VoiceOver/TalkBack support
 **Unity:** Game loop separation (FixedUpdate/Update), object pooling, DOTS/ECS for data-heavy systems, Addressables, draw call batching
 **Unreal Engine:** UPROPERTY/UFUNCTION macros, Blueprint vs C++ separation, Nanite/Lumen usage, PCG framework, actor lifecycle
 **Godot:** Process separation (_physics_process/_process), signal patterns, Jolt physics (4.6+), @export variables, scene composition
@@ -307,15 +311,16 @@ Replaces steps 2-4 above. Step 0 (Stack Detection) still runs first.
 
 **Skeptical default:** Every item starts UNVERIFIED. A keyword match is NOT proof of correctness. You must Read actual file content and verify it matches the plan's intent.
 
+**Priority order:** Complete Check 1 for ALL items first (it catches the most issues). Then Check 2 and Check 3 for items that passed Check 1. Then Check 4 for all Check 1 VERIFIED items. All four checks are mandatory — no skipping.
+
 1. **Detect Phases**: Run `git log --format="%H %s" -20` and match commit subjects against phase patterns (see Phase Detection below). If `-check N` was given, take the last N commits directly.
 2. **Extract Plan Items**: For each phase commit, run `git log -1 --format="%b" <hash>` to get the body. Each bullet point (`-`, `*`, `+`) or non-empty line = one plan item. If no body, the subject line = single item.
-3. **Check 1 — Existence + Correctness**: For each plan item, search the codebase using Grep/Glob to locate it. Then **Read the actual file section** — do not stop at a Grep hit count. Verify the content semantically matches the plan intent. Report: `VERIFIED` (content matches plan) | `PRESENT_BUT_WRONG` (keyword/identifier exists but implementation doesn't match what the plan described — include detail) | `MISSING` (no codebase match at all).
+3. **Check 1 — Existence + Correctness**: For each plan item, search the codebase using Grep/Glob to locate it. Then **Read the actual file section** — do not stop at a Grep hit count. Verify the content semantically matches the plan intent. For code files, also verify syntax is valid (no obvious parse errors in the section you read). For markdown/docs, also verify internal links resolve and table structures are consistent (row counts, column counts, header alignment). Report: `VERIFIED` (content matches plan and is structurally sound) | `PRESENT_BUT_WRONG` (keyword/identifier exists but implementation doesn't match what the plan described — include detail) | `MISSING` (no codebase match at all) | `BROKEN` (exists but has syntax/structural errors).
 4. **Check 2 — Cross-Reference Consistency**: Trace ALL references to each plan item across files. If the plan adds N entries to a table/list/config, verify that N corresponding entries exist at every referencing location. Count table rows, checklist sections, config entries — numbers must match. Report: `CONSISTENT` | `INCONSISTENT — [N in location A, M in location B]` | `ORPHANED — [dangling reference at file:line]`.
 5. **Check 3 — Regression + Contradiction**: Run `git diff` against the phase commits to identify renames. Search for OLD names still lingering in the codebase (partial renames). Search for contradictions — two locations defining the same thing differently. Report: `CLEAN` | `STALE — [old name at file:line]` | `CONTRADICTION — [A says X at file:line, B says Y at file:line]`.
-6. **Check 4 — Structural Validation**: For code: run stack-appropriate syntax/compile check if Bash access allows it. For docs/markdown: validate that internal links resolve, table column counts are consistent, code block language tags are correct. Report: `VALID` | `BROKEN — [detail]` | `SKIPPED — [reason]`.
-7. **Check 5 — Devil's Advocate**: Only runs on items that passed Check 1 as `VERIFIED`. For each: ask "What assumption does this rely on? What would break it?" Then actively search for the counterexample in the codebase. Report: `SURVIVED` (counterexample not found, assumption holds) | `CHALLENGED — [counterexample found: detail]`. Items not VERIFIED in Check 1 get "—" for this check.
-8. **Classify Findings**: Assign severity (CRITICAL/MAJOR/MEDIUM/MINOR) to each non-passing status using the Severity for Check Findings mapping. Apply the `PRESENT_BUT_WRONG` override (always MAJOR minimum).
-9. **Output**: Render Verification report (see Verification Output below).
+6. **Check 4 — Devil's Advocate**: Only runs on items that passed Check 1 as `VERIFIED`. For each: ask "What assumption does this rely on? What would break it?" Then actively search for the counterexample in the codebase. Report: `SURVIVED` (counterexample not found, assumption holds) | `CHALLENGED — [counterexample found: detail]`. Items not VERIFIED in Check 1 get "—" for this check. This check is mandatory — never skip it.
+7. **Classify Findings**: Assign severity (CRITICAL/MAJOR/MEDIUM/MINOR) to each non-passing status using the Severity for Check Findings mapping. Apply the `PRESENT_BUT_WRONG` override (always MAJOR minimum).
+8. **Output**: Render Verification report (see Verification Output below).
 
 ---
 
@@ -350,7 +355,7 @@ From each phase commit's body (`git log -1 --format="%b" <hash>`):
 
 ---
 
-## Sync Points (for `-check` Integration Verification)
+## Sync Points (for `-check` Cross-Reference Verification)
 
 When verifying that a new feature is integrated at ALL required locations, use the detected stack to determine sync points:
 
@@ -361,17 +366,34 @@ When verifying that a new feature is integrated at ALL required locations, use t
 | Vue / Nuxt | Component + Composable/store + Types + Tests |
 | Svelte / SvelteKit | Component + Server load/action + Types + Tests |
 | Angular | Component + Service + Module/standalone config + Tests |
+| Astro | Page/component + Content Collection schema + Integration config |
+| Remix | Route module (loader/action) + Types + Error boundary + Tests |
+| SolidJS | Component + createResource/store + Types + Tests |
+| Hono | Route handler + Middleware + Validator schema + Tests |
 | Python (Django) | Model + View/ViewSet + Serializer + URL conf + Migration |
 | Python (FastAPI) | Route handler + Pydantic schema + Dependencies + Tests |
 | Go | Handler + Model/struct + Repository/store + Tests |
 | Rust | Module + Types/traits + Tests + Cargo.toml (if new dep) |
 | PHP / Laravel | Controller + Model + Migration + Route + Tests |
+| Ruby / Rails | Controller + Model + Migration + Route + Views + Tests |
+| Elixir / Phoenix | Context module + LiveView/Controller + Schema + Router + Tests |
+| C / C++ | Header (.h/.hpp) + Implementation (.c/.cpp) + CMakeLists.txt + Tests |
+| Swift / iOS | View/ViewController + Model + Service + Tests |
+| Kotlin | Activity/Fragment/Composable + ViewModel + Repository + Tests |
+| Java / Kotlin (JVM) | Controller + Service + Repository + Entity + Tests |
+| C# / .NET | Controller + Service + Model + DbContext + Tests |
+| Flutter / Dart | Widget + Provider/Bloc + Repository + Model + Tests |
+| React Native | Component + Navigation config + Native module (if any) + Tests |
 | Unity | MonoBehaviour script + Prefab + Scene reference |
 | Unreal Engine | C++ class + Blueprint + Level reference |
 | Godot | GDScript/C# + Scene (.tscn) + Autoload (if singleton) |
+| Three.js / Web 3D | Scene + Renderer setup + Asset loader/dispose + Frame loop + Tests |
+| Phaser / PixiJS / Kaplay | Scene class + Asset manifest + Game config + State manager |
+| Bevy | Plugin module + Components + Systems + Resources |
+| Pygame / Love2D | Main loop + State machine + Asset loader + Input handler |
 | Vanilla HTML/JS/CSS | Script section + DOM elements + CSS styles + Event handlers |
 
-**Heuristic:** If a plan item introduces a new named entity (function, class, variable, resource, route), search for that name across ALL sync-point locations. If found in fewer locations than expected, report `PARTIAL`.
+**Heuristic:** If a plan item introduces a new named entity (function, class, variable, resource, route), search for that name across ALL sync-point locations. If found in fewer locations than expected, report `INCONSISTENT`.
 
 ---
 
@@ -388,14 +410,14 @@ When verifying that a new feature is integrated at ALL required locations, use t
 
 ### Phase 1: [Subject line] (short_hash)
 
-| # | Item | Check 1: Exist+Correct | Check 2: Cross-Ref | Check 3: Regression | Check 4: Structural | Check 5: Devil's Advocate | Severity |
-|---|------|------------------------|---------------------|---------------------|---------------------|---------------------------|----------|
-| 1 | [item text] | ✓ VERIFIED | ✓ CONSISTENT | ✓ CLEAN | ✓ VALID | ✓ SURVIVED | — |
-| 2 | [item text] | ⚠ PRESENT_BUT_WRONG — [detail] | — | — | — | — | MAJOR |
-| 3 | [item text] | ✗ MISSING | — | — | — | — | MAJOR |
+| # | Item | Check 1: Exist+Correct | Check 2: Cross-Ref | Check 3: Regression | Check 4: Devil's Advocate | Severity |
+|---|------|------------------------|---------------------|---------------------|---------------------------|----------|
+| 1 | [item text] | ✓ VERIFIED | ✓ CONSISTENT | ✓ CLEAN | ✓ SURVIVED | — |
+| 2 | [item text] | ⚠ PRESENT_BUT_WRONG — [detail] | — | — | — | MAJOR |
+| 3 | [item text] | ✗ MISSING | — | — | — | MAJOR |
 
 Every cell MUST be filled with a status or "—" (= not applicable). No silent skips.
-Check 5 only runs on Check 1 VERIFIED items; all others get "—".
+Check 4 only runs on Check 1 VERIFIED items; all others get "—".
 
 ---
 
@@ -414,7 +436,7 @@ Items or checks that were skipped and WHY. This section is MANDATORY even when e
 ### FINDINGS
 
 #### CRITICAL
-- [CONTRADICTION / BROKEN with runtime errors / CHALLENGED proving feature can't work]
+- [CONTRADICTION / BROKEN with syntax or runtime errors / CHALLENGED proving feature can't work]
 
 #### MAJOR
 - [PRESENT_BUT_WRONG / INCONSISTENT cross-refs / MISSING items / CHALLENGED with significant gaps]
@@ -464,7 +486,7 @@ After applying fixes, re-run `-check` to confirm all items now pass.
 
 Status-to-severity mapping:
 
-- **CRITICAL** — `CONTRADICTION` (two locations define same thing differently), `BROKEN` with runtime errors or compilation failures, `CHALLENGED` that proves a feature fundamentally cannot work as designed
+- **CRITICAL** — `CONTRADICTION` (two locations define same thing differently), `BROKEN` (syntax errors, structural failures, compilation errors), `CHALLENGED` that proves a feature fundamentally cannot work as designed
 - **MAJOR** — `PRESENT_BUT_WRONG` (keyword exists but implementation doesn't match plan intent), `INCONSISTENT` cross-references (N entries in one table but M in another), `MISSING` plan items with no codebase match, `CHALLENGED` exposing significant functional gaps
 - **MEDIUM** — `STALE` references to old/renamed identifiers, `ORPHANED` dangling references that don't break functionality, edge-case `CHALLENGED` findings
 - **MINOR** — Style issues in new code, `SKIPPED` checks with valid reasons, theoretical `CHALLENGED` findings unlikely to manifest
@@ -552,99 +574,10 @@ Priority: [High/Medium/Low with rationale]
 - NO AI comments in code
 - Preserve existing features when fixing
 - Max 30 files context
-- Always check current stable version of the detected framework — flag anything 2+ major versions behind
+- Check current stable version of the detected framework using available tools or training knowledge — flag anything 2+ major versions behind; if unable to verify, state the assumption
 - AI security is CRITICAL — never downplay prompt injection
 - Always attempt external references first, but NEVER fail if not found
 - Only apply stack-specific checklist items when that stack is detected
 - When a game engine is detected, suppress web-only rules (Core Web Vitals, landing page patterns, anti-AI-slop font/gradient rules, lazy loading, CI/CD as MEDIUM). Apply game-specific performance metrics and patterns instead.
 
-## Changelog
-
-### 2.6.0 (2026-02-23)
-- **Breaking: Replaced 4-check keyword-grep pipeline with skeptical 5-check pipeline** — every item starts UNVERIFIED, keyword match ≠ proof
-- Check 1 (Existence + Correctness): Must Read actual file content, not just Grep hit counts. New status `PRESENT_BUT_WRONG` for keyword-matches-but-implementation-doesn't-match
-- Check 2 (Cross-Reference Consistency): Traces ALL references across files, counts table rows (N detection entries → N checklist sections). Statuses: `CONSISTENT` / `INCONSISTENT` / `ORPHANED`
-- Check 3 (Regression + Contradiction): Uses `git diff` for renames, searches for contradictions (two locations defining same thing differently). Statuses: `CLEAN` / `STALE` / `CONTRADICTION`
-- Check 4 (Structural Validation): Code syntax + run tests if they exist; docs/markdown: validate internal links, table consistency. Statuses: `VALID` / `BROKEN` / `SKIPPED`
-- Check 5 (Devil's Advocate — NEW): Only runs on Check 1 VERIFIED items. For each: "What assumption does this rely on? What would break it?" Searches for the counterexample. Statuses: `SURVIVED` / `CHALLENGED`
-- Anti-confirmation-bias statuses: Replaced FOUND/COMPLETE/CLEAN/PASS with statuses that encode failure modes, not just presence
-- Severity override: `PRESENT_BUT_WRONG` is always MAJOR minimum — worse than MISSING, because it creates false confidence
-- Weighted verdicts: Any CRITICAL = 0% regardless of other scores. Verdict leads with worst severity, not percentage
-- Verification output redesign: "Worst finding:" at the very top, per-phase 7-column table (Item + Check 1–5 + Severity), mandatory NOT TESTED section
-- CHECK-FIX-PROMPT now shows: which check failed, what the status was, concrete mismatch, specific fix, and "re-run `-check` to confirm"
-
-### 2.5.0 (2026-02-23)
-- Split Python detection into 3 rows: Python (Django), Python (FastAPI), Python (generic) — eliminates dangling sync-point references
-- Renamed Pygame/Love2D/Raylib checklist to Pygame/Love2D — Raylib had no detection logic
-- Added monorepo handling guidance: >3 config files triggers multi-project analysis with proportional file limits
-- Documented Vision tool usage for screenshot/mockup analysis (PNG, JPG, WebP)
-- Added game engine version exception to Input Handling (LTS versions are standard, only flag end-of-life)
-- Clarified plan-item extraction: mixed prose/bullet commits now extract bullets only (>80 char prose lines ignored)
-- Clarified git merge-base fallback chain: tries main, then master, then default branch
-- Improved Reference Loading wording: "external overrides embedded; fill gaps with embedded defaults"
-- Added image error message to Error Messages section
-- Added "Why This?" differentiation section to README
-- Added "What's New" line to README
-- Added .gitignore and CONTRIBUTING.md for repo hygiene
-
-### 2.4.0 (2026-02-23)
-- Added `-check` flag: Post-mortem verification of implementation against git commit history
-- Phase detection via 5 commit subject patterns (Phase N, Step N, #N, numbered, [Phase N]) with 3-level fallback chain
-- Plan-item extraction from commit bodies (bullet points and non-empty lines)
-- 4-check verification pipeline: Existence (Grep/Glob), Integration (stack-specific sync points), Regression (broken refs, orphans), Runtime (syntax/compile)
-- Sync-point table for 14 stacks defining where new features must be wired in
-- Hybrid output format: per-phase tally table + severity-classified findings + percentage verdict
-- `-check -fix` combination: generates targeted fix prompts for failed verification items
-- Added 3 check-specific error messages (no git repo, no phase commits, empty bodies)
-- Added `Grep` to allowed-tools for codebase searching
-- Expanded `Bash` access from `git:*` only to full (needed for runtime checks: node --check, go vet, cargo check, etc.)
-
-### 2.3.0 (2026-02-22)
-- Added game development support: 11 game engine/framework detection entries (Unity, Unreal, Godot, Phaser, Three.js, PixiJS, Kaplay, Bevy, Love2D, Pygame, Web Canvas)
-- Added 9 game-engine-specific checklists (5 items each): Unity, Unreal Engine, Godot, Phaser/Web 2D, Three.js/Web 3D, Bevy, Pygame/Love2D/Raylib, Web Canvas Game
-- Added game-specific severity items: CRITICAL (soft-lock, save corruption, determinism failure), MAJOR (no object pooling, wrong update loop, no frame budget), MEDIUM (no input rebinding, no game accessibility, no spatial partitioning), MINOR (audio mixing issues)
-- Added Game UI Patterns section: HUD design, menu architecture, tutorial/onboarding, resolution independence, game accessibility (2026 baseline), frame budget model, game audio
-- Added context guards to suppress web-only false positives on game projects (CWV, lazy loading, anti-AI-slop font/gradient rules, CI/CD as MEDIUM, global state)
-- Added "Game-specific — NOT anti-patterns" block: purple/neon gradients, single font family, global singletons, large files, no lazy loading
-- Extended Glob pattern with game file extensions (.gd, .tscn, .tres, .unity, .uproject, .lua)
-- Updated framework version guard for game engines (LTS versions are standard, flag only end-of-life)
-
-### 2.2.0 (2026-02-22)
-- Added Anti-AI-Slop Checklist: 12 red flags and 10 professional signals for identifying AI-generated-looking websites
-- Added Landing Page Patterns: hero section design, above-the-fold 5-element checklist, CTA design, social proof placement, section rhythm, Z/F reading patterns
-- Rewrote CSS 2026 Features into Production-Ready (11 features) vs Emerging (8 features) with browser support tiers
-- Added 10+ production-ready CSS features: CSS nesting, @scope, @starting-style, light-dark(), color-mix(), relative color syntax, container queries, Popover API, scroll-driven animations, cross-document View Transitions
-- Added semantic color system guidance: oklch, CSS custom properties, light-dark(), color-mix() for states
-- Added font pairing strategies: serif+sans, display+body, variable fonts, anti-patterns (single font = AI slop)
-- Fixed anchor positioning: `inset-area` → `position-area`, `position-try-options` → `position-try-fallbacks`
-- Fixed Core Web Vitals thresholds to match Google's actual values (LCP ≤2.5s, INP ≤200ms, CLS ≤0.1)
-- Updated spacing system from 4px to 8px grid (Apple HIG / Material Design standard)
-- Updated Django reference from 5.x to 6.x (async views, background tasks, CSP)
-- Added 5th Svelte checklist item: $props() rune for component props
-- Added View Transitions Level 2 (cross-document via CSS @view-transition)
-- Added dead trends to anti-patterns: carousel heroes, parallax overload, auto-playing video, generic stock illustrations
-- Added AI-generated aesthetic as MEDIUM severity item
-- Added Interop 2026 annotations for anchor positioning, scroll-driven animations, View Transitions
-
-### 2.1.0 (2026-02-22)
-- Added 10 new stack-specific checklists: Astro, Remix, SolidJS, Hono, Ruby/Rails, Elixir/Phoenix, C/C++, Swift, Kotlin
-- Detection table expanded from 16 to 22 stacks
-- Each new stack has 5 concrete checklist items with framework-specific patterns and anti-patterns
-- Glob pattern extended for .ex, .exs, .cpp, .hpp, .c, .h, .erl
-
-### 2.0.0 (2026-02-22)
-- Rewrote entire skill to be tech-stack agnostic (was React/Next.js-only)
-- Added Stack Detection (Step 0) with 16 supported stacks
-- Added multi-stack project support for monorepos
-- Split checklists into Universal + Stack-Specific sections
-- Added stack-specific checklists: Vue, Svelte, Angular, Python, Go, Rust, PHP, Vanilla HTML, Mobile
-- Added Testing and CI/CD universal checklists
-- Added CSS 2026 features (if(), sibling-index(), Scroll State Queries, corner-shape, customizable select)
-- Fixed "System Fonts" and "Infinite Scroll" anti-patterns to be context-dependent
-- Replaced JSX/TSX examples with framework-agnostic HTML
-- Removed vendor-specific paths (Kimi CLI hardcoding)
-- Removed hardcoded version numbers — now checks "2+ major versions behind current stable"
-- Added AI Model Compatibility section
-- Added Mobile UI Patterns section
-- Deleted duplicate `brutal-honest-Skill-1.0.0/` subfolder
-- Fixed file limit contradiction (unified to 30)
+See [CHANGELOG.md](./CHANGELOG.md) for version history.
