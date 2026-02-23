@@ -3,7 +3,7 @@ name: brutal-honest
 description: Ruthless expert analysis for code/UI/architecture. Tech-stack agnostic.
 author: gakuseei
 author_url: https://github.com/Gakuseei
-version: 2.5.0
+version: 2.6.0
 last-updated: 2026-02-23
 allowed-tools: [Read, Glob, Grep, Bash, Vision]
 ---
@@ -305,14 +305,17 @@ Check user prompt for keywords ["-fix"], ["-features"], and ["-check"].
 
 Replaces steps 2-4 above. Step 0 (Stack Detection) still runs first.
 
+**Skeptical default:** Every item starts UNVERIFIED. A keyword match is NOT proof of correctness. You must Read actual file content and verify it matches the plan's intent.
+
 1. **Detect Phases**: Run `git log --format="%H %s" -20` and match commit subjects against phase patterns (see Phase Detection below). If `-check N` was given, take the last N commits directly.
 2. **Extract Plan Items**: For each phase commit, run `git log -1 --format="%b" <hash>` to get the body. Each bullet point (`-`, `*`, `+`) or non-empty line = one plan item. If no body, the subject line = single item.
-3. **Check 1 — Existence**: For each plan item, extract keywords and search the codebase using Grep/Glob. Report `FOUND` (with file:line) or `NOT_FOUND`.
-4. **Check 2 — Integration**: Using the detected stack's sync-point table, verify that new items appear at ALL required locations, not just one. Report `COMPLETE` or `PARTIAL`.
-5. **Check 3 — Regression**: Search for broken references to deleted/renamed code, orphaned items, and save/state compatibility issues. Report `CLEAN` or `REGRESSION`.
-6. **Check 4 — Runtime**: Run stack-appropriate syntax/compile check if Bash access allows it. Report `PASS`, `FAIL`, or `SKIPPED`.
-7. **Classify Findings**: Assign severity (CRITICAL/MAJOR/MEDIUM/MINOR) to each failed check.
-8. **Output**: Render Verification report (see Verification Output below).
+3. **Check 1 — Existence + Correctness**: For each plan item, search the codebase using Grep/Glob to locate it. Then **Read the actual file section** — do not stop at a Grep hit count. Verify the content semantically matches the plan intent. Report: `VERIFIED` (content matches plan) | `PRESENT_BUT_WRONG` (keyword/identifier exists but implementation doesn't match what the plan described — include detail) | `MISSING` (no codebase match at all).
+4. **Check 2 — Cross-Reference Consistency**: Trace ALL references to each plan item across files. If the plan adds N entries to a table/list/config, verify that N corresponding entries exist at every referencing location. Count table rows, checklist sections, config entries — numbers must match. Report: `CONSISTENT` | `INCONSISTENT — [N in location A, M in location B]` | `ORPHANED — [dangling reference at file:line]`.
+5. **Check 3 — Regression + Contradiction**: Run `git diff` against the phase commits to identify renames. Search for OLD names still lingering in the codebase (partial renames). Search for contradictions — two locations defining the same thing differently. Report: `CLEAN` | `STALE — [old name at file:line]` | `CONTRADICTION — [A says X at file:line, B says Y at file:line]`.
+6. **Check 4 — Structural Validation**: For code: run stack-appropriate syntax/compile check if Bash access allows it. For docs/markdown: validate that internal links resolve, table column counts are consistent, code block language tags are correct. Report: `VALID` | `BROKEN — [detail]` | `SKIPPED — [reason]`.
+7. **Check 5 — Devil's Advocate**: Only runs on items that passed Check 1 as `VERIFIED`. For each: ask "What assumption does this rely on? What would break it?" Then actively search for the counterexample in the codebase. Report: `SURVIVED` (counterexample not found, assumption holds) | `CHALLENGED — [counterexample found: detail]`. Items not VERIFIED in Check 1 get "—" for this check.
+8. **Classify Findings**: Assign severity (CRITICAL/MAJOR/MEDIUM/MINOR) to each non-passing status using the Severity for Check Findings mapping. Apply the `PRESENT_BUT_WRONG` override (always MAJOR minimum).
+9. **Output**: Render Verification report (see Verification Output below).
 
 ---
 
@@ -377,21 +380,22 @@ When verifying that a new feature is integrated at ALL required locations, use t
 ```
 ## VERIFICATION: [Topic derived from phase subjects]
 
+**Worst finding:** [SEVERITY] — [one-line description of the single worst issue found, or "None" if all checks pass]
+
 **Stack:** [detected] | **Phases:** N | **Commits:** short_hash..short_hash
 
 ---
 
 ### Phase 1: [Subject line] (short_hash)
-**Items: X/Y** ✓ or ✗
 
-| # | Item | Status | Detail |
-|---|------|--------|--------|
-| 1 | [extracted item text] | ✓ FOUND | file:line |
-| 2 | [extracted item text] | ✗ NOT_FOUND | — |
+| # | Item | Check 1: Exist+Correct | Check 2: Cross-Ref | Check 3: Regression | Check 4: Structural | Check 5: Devil's Advocate | Severity |
+|---|------|------------------------|---------------------|---------------------|---------------------|---------------------------|----------|
+| 1 | [item text] | ✓ VERIFIED | ✓ CONSISTENT | ✓ CLEAN | ✓ VALID | ✓ SURVIVED | — |
+| 2 | [item text] | ⚠ PRESENT_BUT_WRONG — [detail] | — | — | — | — | MAJOR |
+| 3 | [item text] | ✗ MISSING | — | — | — | — | MAJOR |
 
-**Integration:** ✓ COMPLETE / ⚠ PARTIAL — Missing: [locations]
-**Regression:** ✓ CLEAN / ✗ REGRESSION — [details]
-**Runtime:** ✓ PASS / ✗ FAIL / ⊘ SKIPPED
+Every cell MUST be filled with a status or "—" (= not applicable). No silent skips.
+Check 5 only runs on Check 1 VERIFIED items; all others get "—".
 
 ---
 
@@ -399,30 +403,39 @@ When verifying that a new feature is integrated at ALL required locations, use t
 
 ---
 
+### NOT TESTED
+
+Items or checks that were skipped and WHY. This section is MANDATORY even when empty:
+
+- [Item X, Check Y: SKIPPED — reason] or "None — all items tested across all applicable checks."
+
+---
+
 ### FINDINGS
 
 #### CRITICAL
-- [Plan item completely missing, runtime errors, data corruption risk]
+- [CONTRADICTION / BROKEN with runtime errors / CHALLENGED proving feature can't work]
 
 #### MAJOR
-- [Partial integration, regression detected]
+- [PRESENT_BUT_WRONG / INCONSISTENT cross-refs / MISSING items / CHALLENGED with significant gaps]
 
 #### MEDIUM
-- [Minor integration gap, orphaned code]
+- [STALE references / ORPHANED refs / edge-case CHALLENGED]
 
 #### MINOR
-- [Style inconsistency, missing docs for new items]
+- [Style issues / SKIPPED checks / theoretical CHALLENGED]
 
 (Omit empty severity sections)
 
 ---
 
 ### VERDICT
-**Phase 1:** X/Y ✓
-**Phase 2:** X/Y ✓ or ✗
-**Total: X/Y (XX.X%)** — N issues to fix
+**Worst severity:** [CRITICAL/MAJOR/MEDIUM/MINOR/NONE]
+**Phase 1:** X/Y passed
+**Phase 2:** X/Y passed
+**Total: X/Y** — Any CRITICAL = 0% regardless of other scores.
 
-One brutal sentence.
+[One brutal sentence that references the actual worst finding, not generic praise. If everything passed, explain what was tested and why it held up — not just "looks good."]
 ```
 
 ### CHECK-FIX-PROMPT (if `-check -fix` combined)
@@ -432,20 +445,31 @@ Appended after VERDICT when both flags are present:
 ```
 ### FIX-PROMPT
 
-Context: Verification of [N] phases found [M] issues
-[For each failed item:]
-Phase [X], Item [Y]: [specific fix with file:line]
-Rules: NO AI comments, preserve existing functionality, test after change
+Context: Verification of [N] phases found [M] issues ([C] CRITICAL, [J] MAJOR, [D] MEDIUM, [I] MINOR)
+
+[For each failed item, ordered by severity:]
+Phase [X], Item [Y]: "[item text]"
+  Failed check: Check [N] — [check name]
+  Status: [STATUS — detail]
+  Mismatch: [what the plan said vs what the code actually does]
+  Fix: [specific action with file:line reference]
+
+Rules: NO AI comments, preserve existing functionality, test after change.
+After applying fixes, re-run `-check` to confirm all items now pass.
 ```
 
 > 10 failed items: Phase fix prompts in batches — CRITICAL first, then MAJOR, then MEDIUM+MINOR.
 
 ### Severity for Check Findings
 
-- **CRITICAL** — Plan item completely missing from codebase, runtime errors found, data corruption risk
-- **MAJOR** — Partial integration (item exists but not at all sync points), regression detected (broken references, orphaned items)
-- **MEDIUM** — Minor integration gap (e.g., tooltip not updated, docs not reflecting change), orphaned code that doesn't break functionality
-- **MINOR** — Style inconsistency in new code, missing documentation for newly added items
+Status-to-severity mapping:
+
+- **CRITICAL** — `CONTRADICTION` (two locations define same thing differently), `BROKEN` with runtime errors or compilation failures, `CHALLENGED` that proves a feature fundamentally cannot work as designed
+- **MAJOR** — `PRESENT_BUT_WRONG` (keyword exists but implementation doesn't match plan intent), `INCONSISTENT` cross-references (N entries in one table but M in another), `MISSING` plan items with no codebase match, `CHALLENGED` exposing significant functional gaps
+- **MEDIUM** — `STALE` references to old/renamed identifiers, `ORPHANED` dangling references that don't break functionality, edge-case `CHALLENGED` findings
+- **MINOR** — Style issues in new code, `SKIPPED` checks with valid reasons, theoretical `CHALLENGED` findings unlikely to manifest
+
+**Severity override:** `PRESENT_BUT_WRONG` is always MAJOR minimum — it is strictly worse than `MISSING`, because code that looks correct but isn't creates false confidence. A missing feature is obvious; a wrong implementation hides behind a keyword match.
 
 ---
 
@@ -535,6 +559,19 @@ Priority: [High/Medium/Low with rationale]
 - When a game engine is detected, suppress web-only rules (Core Web Vitals, landing page patterns, anti-AI-slop font/gradient rules, lazy loading, CI/CD as MEDIUM). Apply game-specific performance metrics and patterns instead.
 
 ## Changelog
+
+### 2.6.0 (2026-02-23)
+- **Breaking: Replaced 4-check keyword-grep pipeline with skeptical 5-check pipeline** — every item starts UNVERIFIED, keyword match ≠ proof
+- Check 1 (Existence + Correctness): Must Read actual file content, not just Grep hit counts. New status `PRESENT_BUT_WRONG` for keyword-matches-but-implementation-doesn't-match
+- Check 2 (Cross-Reference Consistency): Traces ALL references across files, counts table rows (N detection entries → N checklist sections). Statuses: `CONSISTENT` / `INCONSISTENT` / `ORPHANED`
+- Check 3 (Regression + Contradiction): Uses `git diff` for renames, searches for contradictions (two locations defining same thing differently). Statuses: `CLEAN` / `STALE` / `CONTRADICTION`
+- Check 4 (Structural Validation): Code syntax + run tests if they exist; docs/markdown: validate internal links, table consistency. Statuses: `VALID` / `BROKEN` / `SKIPPED`
+- Check 5 (Devil's Advocate — NEW): Only runs on Check 1 VERIFIED items. For each: "What assumption does this rely on? What would break it?" Searches for the counterexample. Statuses: `SURVIVED` / `CHALLENGED`
+- Anti-confirmation-bias statuses: Replaced FOUND/COMPLETE/CLEAN/PASS with statuses that encode failure modes, not just presence
+- Severity override: `PRESENT_BUT_WRONG` is always MAJOR minimum — worse than MISSING, because it creates false confidence
+- Weighted verdicts: Any CRITICAL = 0% regardless of other scores. Verdict leads with worst severity, not percentage
+- Verification output redesign: "Worst finding:" at the very top, per-phase 7-column table (Item + Check 1–5 + Severity), mandatory NOT TESTED section
+- CHECK-FIX-PROMPT now shows: which check failed, what the status was, concrete mismatch, specific fix, and "re-run `-check` to confirm"
 
 ### 2.5.0 (2026-02-23)
 - Split Python detection into 3 rows: Python (Django), Python (FastAPI), Python (generic) — eliminates dangling sync-point references
