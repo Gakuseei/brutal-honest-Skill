@@ -4,7 +4,7 @@
 
 **AI skill for ruthless code review. No sugarcoating. Any tech stack.**
 
-[![Version](https://img.shields.io/badge/v2.5.0-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
+[![Version](https://img.shields.io/badge/v2.6.0-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 [![Stacks](https://img.shields.io/badge/31+_stacks-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 [![AI Agnostic](https://img.shields.io/badge/any_LLM-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 
@@ -16,7 +16,7 @@ Categorized by severity. Zero fluff.
 
 </div>
 
-> **v2.5.0** — Python detection split (Django/FastAPI/generic), monorepo handling, Vision tool docs, repo hygiene. [Changelog](./SKILL.md#changelog)
+> **v2.6.0** — Skeptical 5-check verification pipeline: replaces keyword-grep with semantic correctness checks, Devil's Advocate counterexample search, anti-confirmation-bias statuses, weighted verdicts. [Changelog](./SKILL.md#changelog)
 
 ## Quick Start
 
@@ -130,7 +130,7 @@ Requires a git repository with commit history — won't work outside of git repo
 /brutal-honest -check 5      # Verify last 5 commits as phases
 ```
 
-**4-step pipeline:** Existence (is the code there?) → Integration (wired into all sync points?) → Regression (anything broken?) → Runtime (does it compile?)
+**5-step skeptical pipeline:** Existence + Correctness (does the code match the plan, not just exist?) → Cross-Reference Consistency (do counts and labels match across all locations?) → Regression + Contradiction (any stale names or conflicting definitions?) → Structural Validation (syntax, links, table integrity) → Devil's Advocate (what assumption could break this?)
 
 ## Customization
 
