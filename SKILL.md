@@ -3,9 +3,9 @@ name: brutal-honest
 description: Ruthless expert analysis for code/UI/architecture. Tech-stack agnostic.
 author: gakuseei
 author_url: https://github.com/Gakuseei
-version: 2.3.0
-last-updated: 2026-02-22
-allowed-tools: [Read, Glob, Bash(git:*), Vision]
+version: 2.4.0
+last-updated: 2026-02-23
+allowed-tools: [Read, Glob, Grep, Bash, Vision]
 ---
 
 # brutal-honest
@@ -277,12 +277,18 @@ Use this if `references/ui-patterns.md` not found.
 
 ## Conditional Output Logic
 
-Check user prompt for keywords ["-fix"] and ["-features"].
+Check user prompt for keywords ["-fix"], ["-features"], and ["-check"].
 
+**IF "-check" present** → Run Verification Process (see below), skip normal Review
+**IF "-check -fix"** → Verification + FIX-PROMPT for failed items
 **IF "-fix" only** → Review + FIX-PROMPT (individual or phased if >10 issues)
 **IF "-features" only** → Review + FEATURE-PROMPT (new features, no bugfixes)
 **IF "-fix -features"** → Review + FIX-PROMPT + FEATURE-PROMPT (3 separate blocks)
 **IF no flags** → Review + "Shall I generate the fix prompt or feature ideas?"
+
+**`-check` syntax:**
+- `-check` — auto-detect phase commits via pattern matching
+- `-check N` (e.g. `-check 3`) — treat last N commits as phases
 
 ## Analysis Process
 
@@ -291,6 +297,153 @@ Check user prompt for keywords ["-fix"] and ["-features"].
 3. **Load References**: Try external files first, fallback to embedded
 4. **Brutal Review**: Categorize by severity (CRITICAL/MAJOR/MEDIUM/MINOR) — only apply stack-relevant items
 5. **Apply Conditional Output Logic**
+
+### Verification Process (when `-check` is used)
+
+Replaces steps 2-4 above. Step 0 (Stack Detection) still runs first.
+
+1. **Detect Phases**: Run `git log --format="%H %s" -20` and match commit subjects against phase patterns (see Phase Detection below). If `-check N` was given, take the last N commits directly.
+2. **Extract Plan Items**: For each phase commit, run `git log -1 --format="%b" <hash>` to get the body. Each bullet point (`-`, `*`, `+`) or non-empty line = one plan item. If no body, the subject line = single item.
+3. **Check 1 — Existence**: For each plan item, extract keywords and search the codebase using Grep/Glob. Report `FOUND` (with file:line) or `NOT_FOUND`.
+4. **Check 2 — Integration**: Using the detected stack's sync-point table, verify that new items appear at ALL required locations, not just one. Report `COMPLETE` or `PARTIAL`.
+5. **Check 3 — Regression**: Search for broken references to deleted/renamed code, orphaned items, and save/state compatibility issues. Report `CLEAN` or `REGRESSION`.
+6. **Check 4 — Runtime**: Run stack-appropriate syntax/compile check if Bash access allows it. Report `PASS`, `FAIL`, or `SKIPPED`.
+7. **Classify Findings**: Assign severity (CRITICAL/MAJOR/MEDIUM/MINOR) to each failed check.
+8. **Output**: Render Verification report (see Verification Output below).
+
+---
+
+## Phase Detection (for `-check`)
+
+### Commit Subject Patterns
+
+Match commit subjects against these patterns (case-insensitive, checked in order):
+
+| Pattern | Example |
+|---------|---------|
+| `/^phase\s*\d+/i` | "Phase 1: Add new recipes" |
+| `/^step\s*\d+/i` | "Step 2: Update thresholds" |
+| `/^#\d+\b/` | "#3: Speed unlock system" |
+| `/^\d+[\.\)]\s/` | "1. Add recipes" / "1) Add recipes" |
+| `/^\[phase\s*\d+\]/i` | "[Phase 1] Add new recipes" |
+
+### Fallback Chain (if no patterns match)
+
+1. All commits since last tag (`git describe --tags --abbrev=0`)
+2. No tags → all commits since branch-point vs main/master (`git merge-base HEAD main`)
+3. No branch-point → last 5 commits
+
+### Plan-Item Extraction
+
+From each phase commit's body (`git log -1 --format="%b" <hash>`):
+- Lines starting with `-`, `*`, `+` = individual plan items
+- Non-empty, non-bullet lines = also plan items (one per line)
+- Empty commit body → subject line = single item
+- Strip leading markers and whitespace before using as search keywords
+
+---
+
+## Sync Points (for `-check` Integration Verification)
+
+When verifying that a new feature is integrated at ALL required locations, use the detected stack to determine sync points:
+
+| Stack | Sync Points to Verify |
+|-------|----------------------|
+| Web Canvas Game | Config object + Worker script + Renderer class + UI class |
+| React / Next.js | Component + API route/server action + Types/interfaces + Tests |
+| Vue / Nuxt | Component + Composable/store + Types + Tests |
+| Svelte / SvelteKit | Component + Server load/action + Types + Tests |
+| Angular | Component + Service + Module/standalone config + Tests |
+| Python (Django) | Model + View/ViewSet + Serializer + URL conf + Migration |
+| Python (FastAPI) | Route handler + Pydantic schema + Dependencies + Tests |
+| Go | Handler + Model/struct + Repository/store + Tests |
+| Rust | Module + Types/traits + Tests + Cargo.toml (if new dep) |
+| PHP / Laravel | Controller + Model + Migration + Route + Tests |
+| Unity | MonoBehaviour script + Prefab + Scene reference |
+| Unreal Engine | C++ class + Blueprint + Level reference |
+| Godot | GDScript/C# + Scene (.tscn) + Autoload (if singleton) |
+| Vanilla HTML/JS/CSS | Script section + DOM elements + CSS styles + Event handlers |
+
+**Heuristic:** If a plan item introduces a new named entity (function, class, variable, resource, route), search for that name across ALL sync-point locations. If found in fewer locations than expected, report `PARTIAL`.
+
+---
+
+## Verification Output (for `-check`)
+
+```
+## VERIFICATION: [Topic derived from phase subjects]
+
+**Stack:** [detected] | **Phases:** N | **Commits:** short_hash..short_hash
+
+---
+
+### Phase 1: [Subject line] (short_hash)
+**Items: X/Y** ✓ or ✗
+
+| # | Item | Status | Detail |
+|---|------|--------|--------|
+| 1 | [extracted item text] | ✓ FOUND | file:line |
+| 2 | [extracted item text] | ✗ NOT_FOUND | — |
+
+**Integration:** ✓ COMPLETE / ⚠ PARTIAL — Missing: [locations]
+**Regression:** ✓ CLEAN / ✗ REGRESSION — [details]
+**Runtime:** ✓ PASS / ✗ FAIL / ⊘ SKIPPED
+
+---
+
+[Repeat for each phase...]
+
+---
+
+### FINDINGS
+
+#### CRITICAL
+- [Plan item completely missing, runtime errors, data corruption risk]
+
+#### MAJOR
+- [Partial integration, regression detected]
+
+#### MEDIUM
+- [Minor integration gap, orphaned code]
+
+#### MINOR
+- [Style inconsistency, missing docs for new items]
+
+(Omit empty severity sections)
+
+---
+
+### VERDICT
+**Phase 1:** X/Y ✓
+**Phase 2:** X/Y ✓ or ✗
+**Total: X/Y (XX.X%)** — N issues to fix
+
+One brutal sentence.
+```
+
+### CHECK-FIX-PROMPT (if `-check -fix` combined)
+
+Appended after VERDICT when both flags are present:
+
+```
+### FIX-PROMPT
+
+Context: Verification of [N] phases found [M] issues
+[For each failed item:]
+Phase [X], Item [Y]: [specific fix with file:line]
+Rules: NO AI comments, preserve existing functionality, test after change
+```
+
+> 10 failed items: Phase fix prompts in batches — CRITICAL first, then MAJOR, then MEDIUM+MINOR.
+
+### Severity for Check Findings
+
+- **CRITICAL** — Plan item completely missing from codebase, runtime errors found, data corruption risk
+- **MAJOR** — Partial integration (item exists but not at all sync points), regression detected (broken references, orphaned items)
+- **MEDIUM** — Minor integration gap (e.g., tooltip not updated, docs not reflecting change), orphaned code that doesn't break functionality
+- **MINOR** — Style inconsistency in new code, missing documentation for newly added items
+
+---
 
 ## Output Structure
 
@@ -361,6 +514,9 @@ Priority: [High/Medium/Low with rationale]
 
 - **No files:** "No files to tear apart. Give me code or images."
 - **Unclear topic:** "What exactly? Code? UI? Architecture? Be specific."
+- **No git repo (`-check`):** "Not a git repository. `-check` needs commit history to verify against."
+- **No phase commits (`-check`):** "No phase commits found. Use `-check N` to specify how many recent commits to verify, or write commit messages with 'Phase N:' / 'Step N:' prefixes."
+- **Empty commit bodies (`-check`):** "Commit bodies are empty — using subject lines as single items per phase. For better verification, write detailed commit messages with bullet-point plan items."
 
 ## Rules
 
@@ -374,6 +530,18 @@ Priority: [High/Medium/Low with rationale]
 - When a game engine is detected, suppress web-only rules (Core Web Vitals, landing page patterns, anti-AI-slop font/gradient rules, lazy loading, CI/CD as MEDIUM). Apply game-specific performance metrics and patterns instead.
 
 ## Changelog
+
+### 2.4.0 (2026-02-23)
+- Added `-check` flag: Post-mortem verification of implementation against git commit history
+- Phase detection via 5 commit subject patterns (Phase N, Step N, #N, numbered, [Phase N]) with 3-level fallback chain
+- Plan-item extraction from commit bodies (bullet points and non-empty lines)
+- 4-check verification pipeline: Existence (Grep/Glob), Integration (stack-specific sync points), Regression (broken refs, orphans), Runtime (syntax/compile)
+- Sync-point table for 14 stacks defining where new features must be wired in
+- Hybrid output format: per-phase tally table + severity-classified findings + percentage verdict
+- `-check -fix` combination: generates targeted fix prompts for failed verification items
+- Added 3 check-specific error messages (no git repo, no phase commits, empty bodies)
+- Added `Grep` to allowed-tools for codebase searching
+- Expanded `Bash` access from `git:*` only to full (needed for runtime checks: node --check, go vet, cargo check, etc.)
 
 ### 2.3.0 (2026-02-22)
 - Added game development support: 11 game engine/framework detection entries (Unity, Unreal, Godot, Phaser, Three.js, PixiJS, Kaplay, Bevy, Love2D, Pygame, Web Canvas)
