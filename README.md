@@ -1,6 +1,6 @@
 # brutal-honest
 
-[![Last Updated](https://img.shields.io/badge/last_updated-2026--02--22-blue)](./SKILL.md) [![Version](https://img.shields.io/badge/version-2.3.0-green)](./SKILL.md)
+[![Last Updated](https://img.shields.io/badge/last_updated-2026--02--23-blue)](./SKILL.md) [![Version](https://img.shields.io/badge/version-2.4.0-green)](./SKILL.md)
 
 Ruthless code/UI/architecture analysis. No sugarcoating. **Tech-stack agnostic.**
 
@@ -30,6 +30,15 @@ cp -r brutal-honest ./.agents/skills/
 
 # Both (3 distinct sections: Review -> Fix -> Features)
 /brutal-honest Review my project -fix -features
+
+# Post-mortem verification (checks git commits against code)
+/brutal-honest -check
+
+# Verify last 3 commits as phases
+/brutal-honest -check 3
+
+# Verification + fix prompt for failed items
+/brutal-honest -check -fix
 ```
 
 ## Supported Stacks
@@ -87,6 +96,7 @@ Works with any tech stack. Auto-detects and applies relevant checklists:
 **Stack-specific:** Framework idioms, latest stable features, recommended patterns (only applied when detected)
 **AI apps:** Prompt injection, LLM output sanitization, AI tool permissions, streaming UI patterns
 **Game dev:** Frame budget (60fps/16.6ms), object pooling, game loop separation, save integrity, game accessibility (colorblind, remapping, subtitles), HUD/menu patterns
+**Post-mortem verification (-check):** Phase detection from git history, plan-item existence, integration sync-points, regression detection, runtime sanity checks
 
 ## Example
 
