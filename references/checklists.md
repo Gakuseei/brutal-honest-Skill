@@ -243,7 +243,7 @@
 - [ ] **Plugin architecture** — Features organized as plugins, clean dependency graph between plugins
 - [ ] **System scheduling** — Proper system ordering with .before()/.after(), no implicit ordering bugs
 
-### Pygame / Love2D / Raylib
+### Pygame / Love2D
 - [ ] **Game loop** — Fixed timestep with accumulator for physics, delta time for rendering, not frame-locked
 - [ ] **Asset management** — Assets loaded once at init/scene start, not every frame, proper cleanup on exit
 - [ ] **Input abstraction** — Input mapped to actions (not raw key checks everywhere), supports rebinding
