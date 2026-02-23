@@ -1,165 +1,152 @@
+<div align="center">
+
 # brutal-honest
 
-[![Last Updated](https://img.shields.io/badge/last_updated-2026--02--23-blue)](./SKILL.md) [![Version](https://img.shields.io/badge/version-2.4.0-green)](./SKILL.md)
+**AI skill for ruthless code review. No sugarcoating. Any tech stack.**
 
-Ruthless code/UI/architecture analysis. No sugarcoating. **Tech-stack agnostic.**
+[![Version](https://img.shields.io/badge/v2.4.0-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
+[![Stacks](https://img.shields.io/badge/31+_stacks-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
+[![AI Agnostic](https://img.shields.io/badge/any_LLM-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 
-## Install
+<br>
+
+Senior-level analysis that catches what you missed.<br>
+Security holes. Architectural debt. Framework misuse. Dead patterns.<br>
+Categorized by severity. Zero fluff.
+
+</div>
+
+<br>
+
+## Quick Start
 
 ```bash
-# Claude Code
+# Claude Code (macOS/Linux)
 cp -r brutal-honest ~/.claude/skills/
 
-# Project-level (any AI tool)
+# Claude Code (Windows — PowerShell)
+Copy-Item -Recurse brutal-honest $env:USERPROFILE\.claude\skills\
+
+# Any AI tool — project-level
 cp -r brutal-honest ./.agents/skills/
 
-# Or paste SKILL.md as system context in any LLM
+# Any LLM — paste SKILL.md as system context
 ```
 
 ## Usage
 
 ```bash
-# Basic review
-/brutal-honest Review my auth system
-
-# With fix prompt (generates FIX-PROMPT section)
-/brutal-honest Review my API -fix
-
-# With feature ideas (generates FEATURE-PROMPT section)
-/brutal-honest Review my app -features
-
-# Both (3 distinct sections: Review -> Fix -> Features)
-/brutal-honest Review my project -fix -features
-
-# Post-mortem verification (checks git commits against code)
-/brutal-honest -check
-
-# Verify last 3 commits as phases
-/brutal-honest -check 3
-
-# Verification + fix prompt for failed items
-/brutal-honest -check -fix
+/brutal-honest Review my auth module           # Review with severity breakdown
+/brutal-honest Review src/ -fix                # Review + generate fix prompt
+/brutal-honest Review my app -features         # Review + feature ideas
+/brutal-honest -check                          # Verify implementation against git history
+/brutal-honest -check 3 -fix                   # Verify last 3 commits + fix prompt
 ```
 
-## Supported Stacks
+## Output
 
-Works with any tech stack. Auto-detects and applies relevant checklists:
+Every review follows the same structure:
 
-| Stack | Detection |
-|-------|-----------|
-| React / Next.js | `package.json` with `react` |
-| Vue / Nuxt | `package.json` with `vue` |
-| Svelte / SvelteKit | `package.json` with `svelte` |
-| Angular | `package.json` with `@angular` |
-| Python (Django, FastAPI) | `requirements.txt` / `pyproject.toml` |
-| Go | `go.mod` |
-| Rust | `Cargo.toml` |
-| PHP / Laravel | `composer.json` |
-| Java / Kotlin | `pom.xml` / `build.gradle` |
-| C# / .NET | `*.csproj` / `*.sln` |
-| Flutter / Dart | `pubspec.yaml` |
-| Astro | `astro.config.*` |
-| Remix | `package.json` with `@remix-run` |
-| SolidJS | `package.json` with `solid-js` |
-| Hono | `package.json` with `hono` |
-| Ruby / Rails | `Gemfile` with `rails` |
-| Elixir / Phoenix | `mix.exs` |
-| C / C++ | `CMakeLists.txt` / `*.cpp` + `Makefile` |
-| Swift / iOS | `Package.swift` / `*.xcodeproj` |
-| Kotlin | `build.gradle.kts` with `kotlin` |
-| Vanilla HTML/JS/CSS | Standalone `.html` files |
-| Unity | `Assets/` + `ProjectSettings/` + `*.unity` |
-| Unreal Engine | `*.uproject` |
-| Godot | `project.godot` |
-| Phaser / Web 2D | `package.json` with `phaser` |
-| Three.js / Web 3D | `package.json` with `three` |
-| PixiJS | `package.json` with `pixi.js` |
-| Kaplay | `package.json` with `kaplay` |
-| Bevy (Rust ECS) | `Cargo.toml` with `bevy` |
-| Love2D | `conf.lua` + `main.lua` |
-| Pygame | `*.py` with `import pygame` |
-| Web Canvas Game | `*.html` with `<canvas>` + game loop |
+```
+BRUTAL REVIEW: [Topic]
 
-## Severity Levels
+CRITICAL    — security holes, crashes, data loss
+MAJOR       — ship blockers, missing error handling
+MEDIUM      — missing tests, wrong patterns
+MINOR       — style issues, debug code
 
-| Level | Tone | Examples |
-|-------|------|----------|
-| CRITICAL | Fix yesterday | Prompt injection, hardcoded secrets, crashes |
-| MAJOR | Ship blocker | Outdated framework (2+ versions behind), no error handling |
-| MEDIUM | Code review nightmare | Missing tests, no CI/CD, not using framework idioms |
-| MINOR | Nitpick, but fix it | Mixed code style, debug code in prod, missing docs |
+VERDICT     — one brutal sentence
+```
 
-## What It Checks
+Add `-fix` for a copy-paste-ready fix prompt. Add `-features` for feature ideas.
 
-**Universal (all projects):** Security, input validation, dependency audit, error handling, architecture, testing, CI/CD, accessibility
-**Web:** Core Web Vitals, asset optimization, semantic HTML, WCAG 2.2, View Transitions API
-**Stack-specific:** Framework idioms, latest stable features, recommended patterns (only applied when detected)
-**AI apps:** Prompt injection, LLM output sanitization, AI tool permissions, streaming UI patterns
-**Game dev:** Frame budget (60fps/16.6ms), object pooling, game loop separation, save integrity, game accessibility (colorblind, remapping, subtitles), HUD/menu patterns
-**Post-mortem verification (-check):** Phase detection from git history, plan-item existence, integration sync-points, regression detection, runtime sanity checks
+## What It Catches
 
-## Example
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**Security & Stability**
+- Hardcoded secrets, injection vectors
+- Prompt injection in AI apps
+- Unhandled errors, memory leaks
+- Save corruption, soft-locks (games)
+
+**Architecture**
+- God objects, circular dependencies
+- Copy-paste code, premature abstraction
+- Wrong framework patterns
+
+</td>
+<td width="50%" valign="top">
+
+**Performance**
+- Core Web Vitals violations (web)
+- Frame budget breaches (games)
+- Missing caching, no lazy loading
+- GC pressure in hot paths
+
+**Quality**
+- Outdated frameworks (2+ versions behind)
+- Missing tests & CI/CD
+- WCAG 2.2 accessibility gaps
+- AI-generated aesthetic (anti-slop)
+
+</td>
+</tr>
+</table>
+
+## Stack Detection
+
+Auto-detects your stack from config files. Only applies relevant rules.
+
+| Category | Stacks |
+|----------|--------|
+| **Frontend** | React, Vue, Svelte, Angular, Astro, Remix, SolidJS |
+| **Backend** | Go, Rust, Python, PHP/Laravel, Ruby/Rails, Elixir/Phoenix, Hono |
+| **Native** | Swift/iOS, Kotlin, C/C++, C#/.NET, Flutter/Dart, Java |
+| **Game Engines** | Unity, Unreal, Godot, Bevy, Phaser, Three.js, PixiJS, Pygame, Love2D |
+| **Vanilla** | HTML/JS/CSS, Web Canvas Games |
+
+Multi-stack monorepos? Each sub-project gets its own checklist.
+
+## Verification Mode
+
+`-check` reads your git history and verifies implementation against commit messages.
+Requires a git repository with commit history — won't work outside of git repos.
 
 ```bash
-/brutal-honest Review my auth system -fix
+/brutal-honest -check        # Auto-detect phase commits (Phase 1:, Step 2:, etc.)
+/brutal-honest -check 5      # Verify last 5 commits as phases
 ```
 
-Output:
-```markdown
-## BRUTAL REVIEW: Authentication
+**4-step pipeline:** Existence (is the code there?) → Integration (wired into all sync points?) → Regression (anything broken?) → Runtime (does it compile?)
 
-### CRITICAL
-- Hardcoded API key - config.js:12
-
-### VERDICT
-Security Swiss cheese. Fix CRITICAL before prod.
-
-### FIX-PROMPT
-"Fix auth system:
-config.js:12 Move API_KEY to .env
-Rules: NO AI comments, test after change"
-```
-
-## Architecture
-
-**Hybrid Design:** Works with any AI, customizable, never breaks
+## Customization
 
 ```
 brutal-honest/
-├── SKILL.md                 # Main definition + EMBEDDED references
-│   ├── Severity Guide       # Fallback if external not found
-│   ├── Checklists          # Fallback if external not found
-│   └── UI Patterns         # Fallback if external not found
-├── references/             # OPTIONAL: Override embedded
-│   ├── severity-guide.md   # Custom severity definitions
-│   ├── checklists.md       # Custom checklists
-│   └── ui-patterns.md      # Custom UI patterns
-└── README.md
+  SKILL.md                  # Core skill (with embedded fallbacks)
+  references/
+    severity-guide.md       # Override severity definitions
+    checklists.md           # Override checklists
+    ui-patterns.md          # Override UI patterns
 ```
 
-**How it works:**
-1. AI loads `references/*.md` files (full-detail, with code examples)
-2. If not found → falls back to embedded defaults in SKILL.md (compressed, no code examples)
-3. `references/` files are the **customization layer** — edit them to add your own rules, severity definitions, or UI patterns without touching SKILL.md
-4. Delete a `references/` file → skill uses embedded fallback for that section (never breaks)
+Edit `references/` files to add your own rules. Delete one? The embedded fallback kicks in. Never breaks.
 
-## AI Model Compatibility
+## Works With Any LLM
 
-Works with any LLM that supports skill/prompt loading:
-- **Claude** (Opus, Sonnet, Haiku) via Claude Code skills
-- **GPT** (4.x, 5.x, Codex) via custom instructions or system prompts
-- **Gemini** (2.x, 3.x Pro) via gems or system instructions
-- **Kimi** (K2.5+) via Kimi CLI skills
-- **DeepSeek, Grok, or any model** — paste SKILL.md as system context
+| AI | How |
+|----|-----|
+| **Claude** | Claude Code skills (native) |
+| **GPT / Codex** | Custom instructions or system prompt |
+| **Gemini** | Gems or system instructions |
+| **Kimi** | Kimi CLI skills |
+| **Others** | Paste SKILL.md as system context |
 
-## Rules
+---
 
-- Max 30 files analyzed (prioritized by importance)
-- Auto-detects tech stack from config files
-- Flags frameworks 2+ major versions behind current stable
-- AI security issues = CRITICAL severity
-- Never fails due to missing reference files
-
-## Author
-
-gakuseei - https://github.com/Gakuseei
+<div align="center">
+<sub>by <a href="https://github.com/Gakuseei">gakuseei</a></sub>
+</div>
