@@ -4,8 +4,8 @@
 
 **AI skill for ruthless code review. No sugarcoating. Any tech stack.**
 
-[![Version](https://img.shields.io/badge/v2.6.0-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
-[![Stacks](https://img.shields.io/badge/31+_stacks-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
+[![Version](https://img.shields.io/badge/v2.7.2-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
+[![Stacks](https://img.shields.io/badge/32_stacks-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 [![AI Agnostic](https://img.shields.io/badge/any_LLM-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 
 <br>
@@ -16,7 +16,7 @@ Categorized by severity. Zero fluff.
 
 </div>
 
-> **v2.6.0** — Skeptical 5-check verification pipeline: replaces keyword-grep with semantic correctness checks, Devil's Advocate counterexample search, anti-confirmation-bias statuses, weighted verdicts. [Changelog](./SKILL.md#changelog)
+> **v2.7.2** — Check 4 (Devil's Advocate) is now mandatory — no skipping under any circumstance. Flutter/Swift routed to Mobile checklist. Internal link validation restored in Check 1. Version-check phrasing unified. [Changelog](./CHANGELOG.md)
 
 ## Quick Start
 
@@ -39,7 +39,7 @@ You can paste code into any LLM and ask "review this." Here's why that's worse:
 
 **Generic LLM review** — vague feedback, misses framework-specific issues, no severity ranking, no fix prompts, different answer every time.
 
-**brutal-honest** — auto-detects your stack, applies 31+ framework-specific checklists, categorizes every finding by severity, generates copy-paste fix prompts, verifies implementations against git history. Same ruthless standard every run.
+**brutal-honest** — auto-detects your stack, applies 32+ framework-specific checklists, categorizes every finding by severity, generates copy-paste fix prompts, verifies implementations against git history. Same ruthless standard every run.
 
 No config. No setup. No dashboard. Just `/brutal-honest` and the truth.
 
@@ -114,7 +114,7 @@ Auto-detects your stack from config files. Only applies relevant rules.
 |----------|--------|
 | **Frontend** | React, Vue, Svelte, Angular, Astro, Remix, SolidJS |
 | **Backend** | Go, Rust, Python, PHP/Laravel, Ruby/Rails, Elixir/Phoenix, Hono |
-| **Native** | Swift/iOS, Kotlin, C/C++, C#/.NET, Flutter/Dart, Java |
+| **Native** | Swift/iOS, Kotlin, C/C++, C#/.NET, Flutter/Dart, Java, React Native |
 | **Game Engines** | Unity, Unreal, Godot, Bevy, Phaser, Three.js, PixiJS, Pygame, Love2D |
 | **Vanilla** | HTML/JS/CSS, Web Canvas Games |
 
@@ -130,7 +130,7 @@ Requires a git repository with commit history — won't work outside of git repo
 /brutal-honest -check 5      # Verify last 5 commits as phases
 ```
 
-**5-step skeptical pipeline:** Existence + Correctness (does the code match the plan, not just exist?) → Cross-Reference Consistency (do counts and labels match across all locations?) → Regression + Contradiction (any stale names or conflicting definitions?) → Structural Validation (syntax, links, table integrity) → Devil's Advocate (what assumption could break this?)
+**4-step skeptical pipeline:** Existence + Correctness (does the code match the plan, not just exist?) -> Cross-Reference Consistency (do counts and labels match across all locations?) -> Regression + Contradiction (any stale names or conflicting definitions?) -> Devil's Advocate (what assumption could break this?)
 
 ## Customization
 
