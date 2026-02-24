@@ -14,6 +14,10 @@ Senior-level analysis that catches what you missed.<br>
 Security holes. Architectural debt. Framework misuse. Dead patterns.<br>
 Categorized by severity. Zero fluff.
 
+<br>
+
+<video src="promo/out/brutal-honest-promo.mp4" width="100%" autoplay loop muted playsinline></video>
+
 </div>
 
 > **v2.7.3** — Added Java/JVM and C#/.NET checklists (5 items each). Synced embedded severity with references. Added version-commit pattern to `-check`. Fixed README stack count (33). [Changelog](./CHANGELOG.md)
