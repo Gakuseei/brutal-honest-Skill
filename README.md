@@ -10,7 +10,7 @@
 
 <br>
 
-![brutal-honest demo](https://github.com/Gakuseei/brutal-honest-Skill/raw/main/promo/out/brutal-honest-promo-readme.mp4)
+[![brutal-honest demo](https://github.com/Gakuseei/brutal-honest-Skill/raw/main/promo/out/brutal-honest-thumbnail.png)](https://github.com/Gakuseei/brutal-honest-Skill/raw/main/promo/out/brutal-honest-promo-readme.mp4)
 
 </div>
 
