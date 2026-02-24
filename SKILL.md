@@ -3,9 +3,9 @@ name: brutal-honest
 description: Ruthless expert analysis for code/UI/architecture. Tech-stack agnostic.
 author: gakuseei
 author_url: https://github.com/Gakuseei
-version: 2.7.2
-last-updated: 2026-02-23
-allowed-tools: [Read, Glob, Grep, Bash, Vision]
+version: 2.7.3
+last-updated: 2026-02-24
+allowed-tools: [Read, Glob, Grep, Bash]
 ---
 
 # brutal-honest
@@ -100,48 +100,48 @@ Detect the project's tech stack before applying any checklist. This determines w
 Use this if `references/severity-guide.md` not found.
 
 ### CRITICAL - Fix yesterday
-- **AI vulnerabilities**: Prompt injection (user input reaches LLM unsanitized), AI tools with DELETE permissions without confirmation, auth tokens in AI conversation logs
-- **Security**: Hardcoded secrets, SQL injection, XSS, no input validation, CSRF without protection
-- **Accessibility**: WCAG 2.2 violations = legal risk
-- **Stability**: Crashes, infinite loops, memory leaks, unhandled exceptions in critical paths
-- **Data loss**: No backups, no transaction safety, destructive operations without confirmation
-- **Soft-lock**: Player cannot progress and cannot load a prior save (game projects)
-- **Save corruption**: Save data can be lost or corrupted without detection/recovery (game projects)
-- **Determinism failure**: Desyncs in multiplayer from non-deterministic simulation (multiplayer games)
+- **AI vulnerabilities** — Prompt injection (user input reaches LLM unsanitized), AI tools with DELETE permissions without confirmation, auth tokens in AI conversation logs
+- **Security** — Hardcoded secrets, SQL injection, XSS, CSRF without protection, no input validation at system boundaries
+- **Accessibility** — WCAG 2.2 violations = legal risk
+- **Stability** — Crashes, infinite loops, memory leaks, unhandled exceptions in critical paths
+- **Data loss** — No backups, no transaction safety, destructive operations without confirmation
+- **Soft-lock** — Player cannot progress and cannot load a prior save (game projects)
+- **Save corruption** — Save data can be lost or corrupted without detection/recovery (game projects)
+- **Determinism failure** — Desyncs in multiplayer from non-deterministic simulation (multiplayer games)
 
 ### MAJOR - Ship blocker
-- **Outdated framework**: Using a framework version 2+ major versions behind current stable release (for game engines: locking to an LTS version is standard; flag only if engine version is end-of-life or unsupported)
-- **Architecture**: 2000+ line files without clear section separation (unless architecturally intentional, e.g., single-file apps, embeddable widgets, Go's copy-over-dependency idiom), copy-paste code, God objects/functions, circular dependencies
-- **Type safety**: No strict mode (where applicable), untyped interfaces at boundaries
-- **UX**: No loading states, broken mobile, no error feedback to users
-- **AI Architecture**: Client-side LLM calls instead of server-side (exposes API keys)
-- **Framework-specific rendering errors**: Hydration mismatches, template compilation errors, runtime binding failures
-- **Missing error handling**: Silent failures, no try/catch in async operations, unhandled promise rejections
-- **No object pooling**: Frequently spawned objects allocated/destroyed per frame causing GC pauses (game projects)
-- **Wrong update loop**: Physics in render loop or rendering in physics loop, causing frame-rate-dependent behavior (game projects)
-- **No frame budget discipline**: No profiling, frame time exceeds 16.6ms in core gameplay (game projects)
-- **No worker offloading**: Heavy simulation on main thread blocking rendering; use Web Worker + transferable ArrayBuffers (web game projects with large entity counts)
+- **Outdated framework** — Using a version 2+ major versions behind current stable release (check against latest stable, not a hardcoded version number; for game engines: locking to an LTS version is standard; flag only if engine version is end-of-life or unsupported)
+- **Architecture** — 2000+ line files without clear section separation (unless architecturally intentional, e.g., single-file apps, embeddable widgets, Go's copy-over-dependency idiom), God objects/functions, circular dependencies
+- **Type safety** — No strict mode (where language supports it), `any`/`object`/`interface{}` everywhere at boundaries
+- **UX** — No loading states, broken mobile/responsive, no error feedback to users
+- **AI Architecture** — Client-side LLM calls instead of server-side (exposes API keys)
+- **Framework-specific rendering errors** — Hydration mismatches (SSR frameworks), template compilation errors, runtime binding failures
+- **Missing error handling** — No try/catch in async operations, silent failures, unhandled promise rejections / panics / exceptions
+- **No object pooling** — Frequently spawned objects (bullets, particles, enemies) allocated/destroyed per frame causing GC pauses (game projects)
+- **Wrong update loop** — Physics in render loop or rendering in physics loop, causing frame-rate-dependent behavior (game projects)
+- **No frame budget discipline** — No profiling, no performance targets, frame time exceeds 16.6ms in core gameplay (game projects)
+- **No worker offloading** — Heavy simulation running on main thread blocking rendering; use Web Worker for game logic, transferable ArrayBuffers for data (web game projects with large entity counts)
 
 ### MEDIUM - Code review nightmare
-- **Not using framework idioms**: Not leveraging the framework's recommended patterns and latest stable features
-- **Performance**: No image optimization, missing lazy loading, no caching strategy
-- **Missing tests**: No unit tests, no integration tests, no E2E tests for critical paths
-- **No CI/CD pipeline**: No automated builds, no linting on PR, manual deployments (lower priority for solo/indie/game jam projects)
-- **State management**: Prop drilling / global mutation where framework provides better patterns (game singletons like GameManager/AudioManager are standard architecture, not spaghetti)
-- **AI-generated aesthetic**: Generic design with no brand identity: purple gradients, single sans-serif font, three-column icon grids (web projects)
-- **Missing keyboard shortcuts**: No keyboard navigation for power users (where applicable)
-- **No input rebinding**: Hardcoded controls with no remapping option (game projects — accessibility baseline)
-- **No game accessibility**: Missing colorblind mode, subtitles, or difficulty options (game projects — 2026 baseline)
-- **No spatial partitioning**: Brute-force collision detection with many entities, no quadtree/octree/spatial hash (game projects)
-- **No monitoring**: No error tracking, no performance monitoring, no logging strategy
+- **Not using framework idioms** — Not leveraging the framework's recommended patterns and latest stable features
+- **Performance** — No image/asset optimization, missing lazy loading, no caching strategy
+- **Missing tests** — No unit tests, no integration tests for critical paths
+- **No CI/CD** — No automated builds, no linting on PR, manual deployments (lower priority for solo/indie/game jam projects)
+- **State management** — Prop drilling / global mutation / spaghetti state where framework provides better patterns (game singletons like GameManager/AudioManager are standard architecture, not spaghetti)
+- **AI-generated aesthetic** — Generic design with no brand identity: purple gradients, single sans-serif font, three-column icon grids, uniform rounded corners, 0.1 opacity shadows on everything (web projects)
+- **Missing keyboard navigation** — No keyboard shortcuts for power users (where applicable)
+- **No monitoring** — No error tracking, no performance monitoring, no logging strategy
+- **No input rebinding** — Hardcoded controls with no remapping option (game projects — accessibility baseline)
+- **No game accessibility** — Missing colorblind mode, subtitles, or difficulty options (game projects — 2026 baseline)
+- **No spatial partitioning** — Brute-force collision detection with many entities, no quadtree/octree/spatial hash (game projects)
 
 ### MINOR - Nitpick, but fix it
-- **Inconsistent code style**: Mixed formatting, naming conventions, quote styles in same file
-- **Missing documentation**: Public APIs without types/docs
-- **Debug code in production**: console.log, print(), debug flags left in code
-- **Div soup / non-semantic markup**: Where applicable to web projects
-- **Inconsistent naming**: Mixed camelCase/snake_case, unclear variable names
-- **Audio mixing issues**: No separate volume controls for music/SFX/dialogue, or sound clipping from too many simultaneous voices (game projects)
+- **Inconsistent code style** — Mixed formatting, naming conventions, quote styles within the same file
+- **Missing documentation** — Public APIs / exported functions without types or docs
+- **Debug code in production** — console.log, print(), debug flags, TODO comments left in shipped code
+- **Non-semantic markup** — div soup, inline styles (web projects)
+- **Inconsistent naming** — Mixed camelCase/snake_case, unclear variable names
+- **Audio mixing issues** — No separate volume controls for music/SFX/dialogue, or sound clipping from too many simultaneous voices (game projects)
 
 ---
 
@@ -200,11 +200,11 @@ Use this if `references/checklists.md` not found.
 
 ### Stack-Specific (applied ONLY when detected)
 
-**React/Next.js:** RSC usage, Server Actions, React 19.2 hooks (useActionState, useOptimistic), PPR, App Router patterns, error.tsx + loading.tsx
+**React/Next.js:** RSC usage, Server Actions, React 19+ hooks (useActionState, useOptimistic), PPR, App Router patterns, error.tsx + loading.tsx
 **Vue/Nuxt:** Composition API, auto-imports, Nuxt 4 patterns, defineModel, Pinia stores
 **Svelte/SvelteKit:** Runes ($state, $derived, $effect), $props() for component props, server load functions, form actions
 **Angular:** Signals, standalone components, zoneless change detection, control flow (@if, @for)
-**Python:** Type hints (3.13+), async patterns (Django 6.x, FastAPI), proper ORM usage, virtual environments
+**Python:** Type hints (3.13+), async patterns (Django, FastAPI), proper ORM usage, virtual environments
 **Go:** Error handling patterns (errors.Is/As), goroutine management, interfaces, go vet/staticcheck
 **Rust:** Ownership patterns, error handling (Result/Option), unsafe audit, clippy clean
 **PHP/Laravel:** Eloquent patterns, middleware, queue patterns, Laravel 12 features
@@ -217,6 +217,8 @@ Use this if `references/checklists.md` not found.
 **C/C++:** RAII, smart pointers, memory safety, modern C++20/23, no raw new/delete
 **Swift:** Structured concurrency (async/await, actors), protocol-oriented design, SwiftUI vs UIKit
 **Kotlin:** Coroutines, null safety, multiplatform patterns, sealed classes, Flow
+**Java / Kotlin (JVM):** Spring Boot dependency injection, JPA/Hibernate entity mapping, N+1 prevention, modern Java (records, sealed classes, virtual threads), JUnit 5 + Mockito
+**C# / .NET:** Minimal API or controller patterns, Entity Framework Core with migrations, async/await with cancellation tokens, nullable reference types enabled, dependency injection lifetimes
 **Vanilla HTML/JS/CSS:** Progressive enhancement, semantic HTML, no-build patterns, Web Standards
 **Mobile (React Native / Flutter / SwiftUI):** Platform conventions (iOS HIG / Material Design), framework navigation, appropriate state management, 60fps scrolling, VoiceOver/TalkBack support
 **Unity:** Game loop separation (FixedUpdate/Update), object pooling, DOTS/ECS for data-heavy systems, Addressables, draw call batching
@@ -337,6 +339,7 @@ Match commit subjects against these patterns (case-insensitive, checked in order
 | `/^#\d+\b/` | "#3: Speed unlock system" |
 | `/^\d+[\.\)]\s/` | "1. Add recipes" / "1) Add recipes" |
 | `/^\[phase\s*\d+\]/i` | "[Phase 1] Add new recipes" |
+| `/^v?\d+\.\d+/` | "v2.7.2: Sync fallbacks" / "2.5.0: Polish" |
 
 ### Fallback Chain (if no patterns match)
 
