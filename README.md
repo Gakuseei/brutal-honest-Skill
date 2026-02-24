@@ -2,7 +2,7 @@
 
 # brutal-honest
 
-**AI skill for ruthless code review. No sugarcoating. Any tech stack.**
+**Ruthless code review. No sugarcoating. Any tech stack.**
 
 [![Version](https://img.shields.io/badge/v2.7.3-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 [![Stacks](https://img.shields.io/badge/33_stacks-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
@@ -10,154 +10,35 @@
 
 <br>
 
-Senior-level analysis that catches what you missed.<br>
-Security holes. Architectural debt. Framework misuse. Dead patterns.<br>
-Categorized by severity. Zero fluff.
-
-<br>
-
-<video src="promo/out/brutal-honest-promo.mp4" width="100%" autoplay loop muted playsinline></video>
+<video src="https://github.com/Gakuseei/brutal-honest-Skill/releases/download/promo/brutal-honest-promo.mp4" width="100%" autoplay loop muted playsinline></video>
 
 </div>
 
-> **v2.7.3** — Added Java/JVM and C#/.NET checklists (5 items each). Synced embedded severity with references. Added version-commit pattern to `-check`. Fixed README stack count (33). [Changelog](./CHANGELOG.md)
-
-## Quick Start
+## Install
 
 ```bash
-# Claude Code (macOS/Linux)
-cp -r brutal-honest ~/.claude/skills/
-
-# Claude Code (Windows — PowerShell)
-Copy-Item -Recurse brutal-honest $env:USERPROFILE\.claude\skills\
-
-# Any AI tool — project-level
-cp -r brutal-honest ./.agents/skills/
+# Claude Code
+cp -r brutal-honest ~/.claude/skills/          # macOS/Linux
+Copy-Item -Recurse brutal-honest $env:USERPROFILE\.claude\skills\  # Windows
 
 # Any LLM — paste SKILL.md as system context
 ```
 
-## Why This?
-
-You can paste code into any LLM and ask "review this." Here's why that's worse:
-
-**Generic LLM review** — vague feedback, misses framework-specific issues, no severity ranking, no fix prompts, different answer every time.
-
-**brutal-honest** — auto-detects your stack, applies 32+ framework-specific checklists, categorizes every finding by severity, generates copy-paste fix prompts, verifies implementations against git history. Same ruthless standard every run.
-
-No config. No setup. No dashboard. Just `/brutal-honest` and the truth.
-
 ## Usage
 
 ```bash
-/brutal-honest Review my auth module           # Review with severity breakdown
-/brutal-honest Review src/ -fix                # Review + generate fix prompt
-/brutal-honest Review my app -features         # Review + feature ideas
-/brutal-honest -check                          # Verify implementation against git history
-/brutal-honest -check 3 -fix                   # Verify last 3 commits + fix prompt
+/brutal-honest Review src/ -fix -features   # Review + fix prompt + feature ideas
+/brutal-honest -check                       # Verify fixes against git history
 ```
 
-## Output
+Auto-detects your stack. 33 stacks supported — React, Vue, Go, Rust, Unity, Godot, and [more](./SKILL.md).
 
-Every review follows the same structure:
+## How It Works
 
-```
-BRUTAL REVIEW: [Topic]
-
-CRITICAL    — security holes, crashes, data loss
-MAJOR       — ship blockers, missing error handling
-MEDIUM      — missing tests, wrong patterns
-MINOR       — style issues, debug code
-
-VERDICT     — one brutal sentence
-```
-
-Add `-fix` for a copy-paste-ready fix prompt. Add `-features` for feature ideas.
-
-## What It Catches
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-**Security & Stability**
-- Hardcoded secrets, injection vectors
-- Prompt injection in AI apps
-- Unhandled errors, memory leaks
-- Save corruption, soft-locks (games)
-
-**Architecture**
-- God objects, circular dependencies
-- Copy-paste code, premature abstraction
-- Wrong framework patterns
-
-</td>
-<td width="50%" valign="top">
-
-**Performance**
-- Core Web Vitals violations (web)
-- Frame budget breaches (games)
-- Missing caching, no lazy loading
-- GC pressure in hot paths
-
-**Quality**
-- Outdated frameworks (2+ versions behind)
-- Missing tests & CI/CD
-- WCAG 2.2 accessibility gaps
-- AI-generated aesthetic (anti-slop)
-
-</td>
-</tr>
-</table>
-
-## Stack Detection
-
-Auto-detects your stack from config files. Only applies relevant rules.
-
-| Category | Stacks |
-|----------|--------|
-| **Frontend** | React, Vue, Svelte, Angular, Astro, Remix, SolidJS |
-| **Backend** | Go, Rust, Python, PHP/Laravel, Ruby/Rails, Elixir/Phoenix, Hono |
-| **Native** | Swift/iOS, Kotlin, C/C++, C#/.NET, Flutter/Dart, Java, React Native |
-| **Game Engines** | Unity, Unreal, Godot, Bevy, Phaser, Three.js, PixiJS, Kaplay, Pygame, Love2D |
-| **Vanilla** | HTML/JS/CSS, Web Canvas Games |
-
-Multi-stack monorepos? Each sub-project gets its own checklist.
-
-## Verification Mode
-
-`-check` reads your git history and verifies implementation against commit messages.
-Requires a git repository with commit history — won't work outside of git repos.
-
-```bash
-/brutal-honest -check        # Auto-detect phase commits (Phase 1:, Step 2:, etc.)
-/brutal-honest -check 5      # Verify last 5 commits as phases
-```
-
-**4-step skeptical pipeline:** Existence + Correctness (does the code match the plan, not just exist?) -> Cross-Reference Consistency (do counts and labels match across all locations?) -> Regression + Contradiction (any stale names or conflicting definitions?) -> Devil's Advocate (what assumption could break this?)
-
-## Customization
-
-```
-brutal-honest/
-  SKILL.md                  # Core skill (with embedded fallbacks)
-  references/
-    severity-guide.md       # Override severity definitions
-    checklists.md           # Override checklists
-    ui-patterns.md          # Override UI patterns
-```
-
-Edit `references/` files to add your own rules. Delete one? The embedded fallback kicks in. Never breaks.
-
-## Works With Any LLM
-
-| AI | How |
-|----|-----|
-| **Claude** | Claude Code skills (native) |
-| **GPT / Codex** | Custom instructions or system prompt |
-| **Gemini** | Gems or system instructions |
-| **Kimi** | Kimi CLI skills |
-| **Others** | Paste SKILL.md as system context |
+1. **Review** — Scans your code, categorizes every finding by severity (CRITICAL/MAJOR/MEDIUM/MINOR), writes a verdict
+2. **Fix** (`-fix`) — Generates a copy-paste fix prompt, phased by severity
+3. **Features** (`-features`) — Suggests concrete features with priority
+4. **Verify** (`-check`) — 4-step skeptical pipeline that reads git history and proves fixes actually work
 
 ---
 
