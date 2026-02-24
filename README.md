@@ -10,7 +10,7 @@
 
 <br>
 
-<video src="https://github.com/Gakuseei/brutal-honest-Skill/raw/main/promo/out/brutal-honest-promo-readme.mp4" width="100%" autoplay loop muted playsinline></video>
+![brutal-honest demo](https://github.com/Gakuseei/brutal-honest-Skill/raw/main/promo/out/brutal-honest-promo-readme.mp4)
 
 </div>
 
