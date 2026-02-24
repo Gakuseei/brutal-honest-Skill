@@ -188,7 +188,7 @@
 - [ ] **Testing** — JUnit 5 with Mockito, @SpringBootTest for integration tests, Testcontainers for database tests
 
 ### C# / .NET
-- [ ] **API patterns** — Minimal APIs or controller-based routing, proper model binding, typed response types (Results/IActionResult)
+- [ ] **Project architecture** — Appropriate patterns for project type: Minimal APIs/controllers for web, MVVM for WPF/MAUI, component model for Blazor
 - [ ] **Entity Framework Core** — Code-first migrations versioned, DbContext scoped lifetime, async queries, no N+1 (Include/ThenInclude)
 - [ ] **Async / await** — Proper CancellationToken propagation, no sync-over-async (no .Result/.Wait()), ConfigureAwait where needed
 - [ ] **Nullable reference types** — Enabled project-wide (`<Nullable>enable</Nullable>`), no suppression operators (`!`) without justification

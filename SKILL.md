@@ -74,7 +74,7 @@ Detect the project's tech stack before applying any checklist. This determines w
   - Prioritize: 1) Config files (package.json, pyproject.toml, go.mod, etc.) 2) Entry points 3) Core logic
   - Max 30 files: If more, analyze entry points + configs only
   - Monorepos: If >3 config files detected at different paths, treat as multi-project. Analyze workspace root config + one entry point per sub-project. Distribute the 30-file limit proportionally. When user specifies a sub-project, focus on that one.
-- Images: Use Vision tool to analyze screenshots/mockups for colors, contrast, typography, spacing, layout issues. Supports PNG, JPG, WebP. If no image provided, skip.
+- Images: Use Read tool to analyze screenshots/mockups for colors, contrast, typography, spacing, layout issues. Supports PNG, JPG, WebP. If no image provided, skip.
 
 ## Reference Loading
 
@@ -218,7 +218,7 @@ Use this if `references/checklists.md` not found.
 **Swift:** Structured concurrency (async/await, actors), protocol-oriented design, SwiftUI vs UIKit
 **Kotlin:** Coroutines, null safety, multiplatform patterns, sealed classes, Flow
 **Java / Kotlin (JVM):** Spring Boot dependency injection, JPA/Hibernate entity mapping, N+1 prevention, modern Java (records, sealed classes, virtual threads), JUnit 5 + Mockito
-**C# / .NET:** Minimal API or controller patterns, Entity Framework Core with migrations, async/await with cancellation tokens, nullable reference types enabled, dependency injection lifetimes
+**C# / .NET:** Project architecture (web API / Blazor / WPF / MAUI), Entity Framework Core with migrations, async/await with cancellation tokens, nullable reference types enabled, dependency injection lifetimes
 **Vanilla HTML/JS/CSS:** Progressive enhancement, semantic HTML, no-build patterns, Web Standards
 **Mobile (React Native / Flutter / SwiftUI):** Platform conventions (iOS HIG / Material Design), framework navigation, appropriate state management, 60fps scrolling, VoiceOver/TalkBack support
 **Unity:** Game loop separation (FixedUpdate/Update), object pooling, DOTS/ECS for data-heavy systems, Addressables, draw call batching

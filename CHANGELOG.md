@@ -8,6 +8,8 @@
 - **Fixed README stack count** — added Kaplay to Game Engines row, badge updated from 32 to 33
 - **Fixed CHANGELOG v2.7.0 column wording** — "changed from 7 to 7" replaced with explicit old/new format breakdown
 - **Removed Vision from allowed-tools** — not a standard tool name; Claude Code uses Read for images
+- **Fixed stale Vision reference in Input Handling** — SKILL.md:77 still said "Use Vision tool" after Vision was removed from allowed-tools; now says "Use Read tool"
+- **Broadened C#/.NET checklist scope** — item 1 was web-API-only ("Minimal APIs or controller-based routing") but `*.csproj` detection fires for WPF/MAUI/Blazor too; now covers all project types
 - **Fixed forward-looking version references** — React 19.2 → React 19+, Django 6.x → Django (in both SKILL.md and references/checklists.md)
 - **Added node_modules/ to .gitignore**
 
