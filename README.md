@@ -10,7 +10,7 @@
 
 <br>
 
-<video src="https://github.com/Gakuseei/brutal-honest-Skill/releases/download/promo/brutal-honest-promo.mp4" width="100%" autoplay loop muted playsinline></video>
+<video src="https://github.com/Gakuseei/brutal-honest-Skill/raw/main/promo/out/brutal-honest-promo-readme.mp4" width="100%" autoplay loop muted playsinline></video>
 
 </div>
 
@@ -21,24 +21,70 @@
 cp -r brutal-honest ~/.claude/skills/          # macOS/Linux
 Copy-Item -Recurse brutal-honest $env:USERPROFILE\.claude\skills\  # Windows
 
+# Any AI tool — project-level
+cp -r brutal-honest ./.agents/skills/
+
 # Any LLM — paste SKILL.md as system context
 ```
 
-## Usage
+## Commands
 
 ```bash
-/brutal-honest Review src/ -fix -features   # Review + fix prompt + feature ideas
-/brutal-honest -check                       # Verify fixes against git history
-```
+# Review
+/brutal-honest Review src/                      # Review with severity breakdown
+/brutal-honest Review my auth module            # Review specific module
 
-Auto-detects your stack. 33 stacks supported — React, Vue, Go, Rust, Unity, Godot, and [more](./SKILL.md).
+# Review + Fix
+/brutal-honest Review src/ -fix                 # Review + generate fix prompt
+/brutal-honest Review my app -fix -features     # Review + fix prompt + feature ideas
+
+# Features only
+/brutal-honest Review my app -features          # Review + feature suggestions
+
+# Verify implementation
+/brutal-honest -check                           # Auto-detect phase commits, verify against git history
+/brutal-honest -check 3                         # Verify last 3 commits as phases
+/brutal-honest -check -fix                      # Verify + generate fix prompt for failed items
+```
 
 ## How It Works
 
-1. **Review** — Scans your code, categorizes every finding by severity (CRITICAL/MAJOR/MEDIUM/MINOR), writes a verdict
-2. **Fix** (`-fix`) — Generates a copy-paste fix prompt, phased by severity
-3. **Features** (`-features`) — Suggests concrete features with priority
-4. **Verify** (`-check`) — 4-step skeptical pipeline that reads git history and proves fixes actually work
+**Review** — Auto-detects your stack, applies framework-specific checklists, categorizes every finding by severity.
+
+```
+CRITICAL    — security holes, crashes, data loss
+MAJOR       — ship blockers, missing error handling
+MEDIUM      — missing tests, wrong patterns
+MINOR       — style issues, debug code
+
+VERDICT     — one brutal sentence
+```
+
+**Fix** (`-fix`) — Generates a copy-paste fix prompt, phased by severity. CRITICAL first, then MAJOR, then the rest.
+
+**Features** (`-features`) — Concrete feature ideas with priority (High/Medium/Low).
+
+**Verify** (`-check`) — 4-step skeptical pipeline that reads your git history and proves fixes actually work: Existence + Correctness → Cross-Reference → Regression → Devil's Advocate.
+
+## Supported Stacks
+
+| Category | Stacks |
+|----------|--------|
+| **Frontend** | React, Vue, Svelte, Angular, Astro, Remix, SolidJS |
+| **Backend** | Go, Rust, Python, PHP/Laravel, Ruby/Rails, Elixir/Phoenix, Hono |
+| **Native** | Swift/iOS, Kotlin, C/C++, C#/.NET, Flutter/Dart, Java/JVM, React Native |
+| **Game Engines** | Unity, Unreal, Godot, Bevy, Phaser, Three.js, PixiJS, Kaplay, Pygame, Love2D |
+| **Vanilla** | HTML/JS/CSS, Web Canvas Games |
+
+## Works With Any LLM
+
+| AI | How |
+|----|-----|
+| **Claude** | Claude Code skills (native) |
+| **GPT / Codex** | Custom instructions or system prompt |
+| **Gemini** | Gems or system instructions |
+| **Kimi** | Kimi CLI skills |
+| **Others** | Paste SKILL.md as system context |
 
 ---
 
