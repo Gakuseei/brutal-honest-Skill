@@ -61,7 +61,7 @@
 
 ### React / Next.js
 - [ ] **React Server Components** — `'use client'` only when needed, default to server
-- [ ] **React 19.2 hooks** — useActionState, useOptimistic, useFormStatus, use() where applicable
+- [ ] **React 19+ hooks** — useActionState, useOptimistic, useFormStatus, use() where applicable
 - [ ] **Server Actions** — Mutations run server-side, not client-side API calls
 - [ ] **Partial Pre-rendering (PPR)** — Enabled where beneficial (Next.js 15+/16+)
 - [ ] **Error boundaries** — Each route has error.tsx + loading.tsx
@@ -91,7 +91,7 @@
 
 ### Python (Django / FastAPI / Flask)
 - [ ] **Type hints** — Full type annotation (Python 3.13+ syntax)
-- [ ] **Async patterns** — async/await where I/O bound (FastAPI, Django 6.x async views, background tasks, CSP)
+- [ ] **Async patterns** — async/await where I/O bound (FastAPI, Django async views, background tasks, CSP)
 - [ ] **ORM usage** — Proper queryset patterns, select_related/prefetch_related, no N+1
 - [ ] **Virtual environment** — Dependencies isolated, requirements pinned
 - [ ] **Security middleware** — CORS, rate limiting, input validation (Pydantic / Django forms)
@@ -179,6 +179,20 @@
 - [ ] **Multiplatform** — Shared code in `commonMain`, platform-specific in `expect`/`actual` (if KMP project)
 - [ ] **Sealed classes** — Using sealed classes/interfaces for exhaustive `when` expressions in state/event modeling
 - [ ] **Flow** — Using `StateFlow`/`SharedFlow` for reactive streams, not LiveData in new code
+
+### Java / Kotlin (JVM)
+- [ ] **Spring Boot patterns** — Proper dependency injection, component scanning, auto-configuration; no field injection
+- [ ] **JPA / Hibernate** — Entity mapping with lazy loading strategy, N+1 prevention (join fetch / EntityGraph), proper transaction boundaries
+- [ ] **Build tool hygiene** — Gradle/Maven with dependency management, reproducible builds, no unused dependencies
+- [ ] **Modern Java** — Records for DTOs, sealed classes for type hierarchies, pattern matching (17+), virtual threads (21+) for I/O-bound work
+- [ ] **Testing** — JUnit 5 with Mockito, @SpringBootTest for integration tests, Testcontainers for database tests
+
+### C# / .NET
+- [ ] **API patterns** — Minimal APIs or controller-based routing, proper model binding, typed response types (Results/IActionResult)
+- [ ] **Entity Framework Core** — Code-first migrations versioned, DbContext scoped lifetime, async queries, no N+1 (Include/ThenInclude)
+- [ ] **Async / await** — Proper CancellationToken propagation, no sync-over-async (no .Result/.Wait()), ConfigureAwait where needed
+- [ ] **Nullable reference types** — Enabled project-wide (`<Nullable>enable</Nullable>`), no suppression operators (`!`) without justification
+- [ ] **Dependency injection** — Proper service lifetimes (transient/scoped/singleton), IOptions pattern for configuration, no service locator
 
 ### Vanilla HTML / JS / CSS
 - [ ] **Progressive enhancement** — Works without JS where possible

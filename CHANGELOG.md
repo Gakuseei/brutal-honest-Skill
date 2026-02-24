@@ -1,5 +1,16 @@
 # Changelog
 
+### 2.7.3 (2026-02-24)
+- **Added Java / Kotlin (JVM) checklist** — 5 items: Spring Boot patterns, JPA/Hibernate, build tool hygiene, modern Java (records, sealed classes, virtual threads), testing (JUnit 5 + Testcontainers). Detection table already promised "JVM-specific" — now it delivers
+- **Added C# / .NET checklist** — 5 items: API patterns (minimal/controller), Entity Framework Core, async/await with CancellationToken, nullable reference types, dependency injection lifetimes. Detection table already promised ".NET-specific" — now it delivers
+- **Synced embedded severity guide with references/severity-guide.md** — 6 drift points fixed: Architecture (removed orphan "copy-paste code"), Type safety (now uses `any`/`object`/`interface{}`), Performance (image → image/asset), AI aesthetic (added uniform rounded corners + 0.1 opacity shadows), keyboard label (shortcuts → navigation), MINOR markup (added inline styles)
+- **Added version-style commit pattern to Phase Detection** — `/^v?\d+\.\d+/` now matches `v2.7.2:` and `2.5.0:` style commits for `-check` self-applicability
+- **Fixed README stack count** — added Kaplay to Game Engines row, badge updated from 32 to 33
+- **Fixed CHANGELOG v2.7.0 column wording** — "changed from 7 to 7" replaced with explicit old/new format breakdown
+- **Removed Vision from allowed-tools** — not a standard tool name; Claude Code uses Read for images
+- **Fixed forward-looking version references** — React 19.2 → React 19+, Django 6.x → Django (in both SKILL.md and references/checklists.md)
+- **Added node_modules/ to .gitignore**
+
 ### 2.7.2 (2026-02-23)
 - **Made Check 4 (Devil's Advocate) mandatory** — removed all "best-effort", "context budget", and skip language. All four checks must run on every `-check` invocation, no exceptions
 - **Routed Flutter/Swift detection to Mobile checklist** — detection table now says `Flutter-specific + Mobile + Universal` and `Swift-specific + Mobile + Universal`, matching the Mobile checklist that names them
@@ -17,7 +28,7 @@
 ### 2.7.0 (2026-02-23)
 - **Synced embedded fallbacks with reference files** — embedded Security checklist now has 7 items (was 5), Testing has 7 (was 3), Accessibility has 6 (was 4), Architecture has 6 (was 4), Performance has 5 (was 3), CI/CD has 4 (was 3). Paste-SKILL.md users now get full coverage instead of a weaker subset
 - **Added 16 missing sync points** — Sync Points table now covers all 30+ detected stacks (was 14). Added: Astro, Remix, SolidJS, Hono, Ruby/Rails, Elixir/Phoenix, C/C++, Swift, Kotlin, Java/Kotlin JVM, C#/.NET, Flutter/Dart, React Native, Phaser/PixiJS/Kaplay, Bevy, Pygame/Love2D
-- **Simplified verification pipeline from 5 checks to 4** — merged Structural Validation into Check 1 (verify syntax when reading files), made Devil's Advocate best-effort with explicit budget guidance. Table format changed from 7 columns to 7 (added # row number, reduced checks from 5 to 4; was Item + Check 1-5 + Severity, now # + Item + Check 1-4 + Severity)
+- **Simplified verification pipeline from 5 checks to 4** — merged Structural Validation into Check 1 (verify syntax when reading files), made Devil's Advocate best-effort with explicit budget guidance. Table columns restructured: old format (Item + Check 1-5 + Severity = 7) → new format (# + Item + Check 1-4 + Severity = 7)
 - **Added priority order for checks** — Check 1 for all items first (catches most issues), then Check 2+3 for passed items, then Check 4. (Note: Check 4 was originally best-effort; made mandatory in v2.7.2)
 - **Moved changelog to CHANGELOG.md** — saves ~90 lines of token overhead per skill invocation
 - **Removed AI Model Compatibility section from SKILL.md** — already in README, was wasting ~10 lines of prompt context

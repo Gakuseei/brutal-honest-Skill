@@ -4,8 +4,8 @@
 
 **AI skill for ruthless code review. No sugarcoating. Any tech stack.**
 
-[![Version](https://img.shields.io/badge/v2.7.2-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
-[![Stacks](https://img.shields.io/badge/32_stacks-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
+[![Version](https://img.shields.io/badge/v2.7.3-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
+[![Stacks](https://img.shields.io/badge/33_stacks-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 [![AI Agnostic](https://img.shields.io/badge/any_LLM-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 
 <br>
@@ -16,7 +16,7 @@ Categorized by severity. Zero fluff.
 
 </div>
 
-> **v2.7.2** — Check 4 (Devil's Advocate) is now mandatory — no skipping under any circumstance. Flutter/Swift routed to Mobile checklist. Internal link validation restored in Check 1. Version-check phrasing unified. [Changelog](./CHANGELOG.md)
+> **v2.7.3** — Added Java/JVM and C#/.NET checklists (5 items each). Synced embedded severity with references. Added version-commit pattern to `-check`. Fixed README stack count (33). [Changelog](./CHANGELOG.md)
 
 ## Quick Start
 
@@ -115,7 +115,7 @@ Auto-detects your stack from config files. Only applies relevant rules.
 | **Frontend** | React, Vue, Svelte, Angular, Astro, Remix, SolidJS |
 | **Backend** | Go, Rust, Python, PHP/Laravel, Ruby/Rails, Elixir/Phoenix, Hono |
 | **Native** | Swift/iOS, Kotlin, C/C++, C#/.NET, Flutter/Dart, Java, React Native |
-| **Game Engines** | Unity, Unreal, Godot, Bevy, Phaser, Three.js, PixiJS, Pygame, Love2D |
+| **Game Engines** | Unity, Unreal, Godot, Bevy, Phaser, Three.js, PixiJS, Kaplay, Pygame, Love2D |
 | **Vanilla** | HTML/JS/CSS, Web Canvas Games |
 
 Multi-stack monorepos? Each sub-project gets its own checklist.
