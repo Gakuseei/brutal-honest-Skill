@@ -3,8 +3,8 @@ name: brutal-honest
 description: Ruthless expert analysis for code/UI/architecture. Tech-stack agnostic.
 allowed-tools: Read Glob Grep Bash
 metadata:
-  author: gakuseei
-  author_url: https://github.com/Gakuseei
+  author: gakuseeii
+  author_url: https://gitlab.com/Gakuseeii
   version: "2.7.4"
   last-updated: "2026-02-27"
 ---

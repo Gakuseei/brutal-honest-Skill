@@ -4,13 +4,13 @@
 
 **Ruthless code review. No sugarcoating. Any tech stack.**
 
-[![Version](https://img.shields.io/badge/v2.7.3-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
+[![Version](https://img.shields.io/badge/v2.7.4-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 [![Stacks](https://img.shields.io/badge/33_stacks-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 [![AI Agnostic](https://img.shields.io/badge/any_LLM-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 
 <br>
 
-[![brutal-honest demo](https://github.com/Gakuseei/brutal-honest-Skill/raw/main/promo/out/brutal-honest-thumbnail.png)](https://github.com/Gakuseei/brutal-honest-Skill/raw/main/promo/out/brutal-honest-promo-readme.mp4)
+![brutal-honest demo](/uploads/60973b9ed1e4780af65e5491c396f358/brutal-honest-promo.mp4)
 
 </div>
 
@@ -89,5 +89,5 @@ VERDICT     — one brutal sentence
 ---
 
 <div align="center">
-<sub>by <a href="https://github.com/Gakuseei">gakuseei</a></sub>
+<sub>by <a href="https://gitlab.com/Gakuseeii">gakuseeii</a></sub>
 </div>
