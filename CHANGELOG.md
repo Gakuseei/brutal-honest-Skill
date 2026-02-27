@@ -1,5 +1,12 @@
 # Changelog
 
+### 2.7.4 (2026-02-27)
+- **Standardized YAML frontmatter** — moved author/version/last-updated under `metadata:`, changed `allowed-tools` from YAML array to space-delimited per Agent Skills Open Standard
+- **Fixed Conditional Output Logic ambiguity** — replaced overlapping IF blocks with numbered priority list (first match wins), explicitly separated CHECK-FIX-PROMPT (branch 1) from regular FIX-PROMPT (branch 4), added key rule paragraph
+- **Renamed CHECK-FIX-PROMPT internal heading** — code block heading now says `### CHECK-FIX-PROMPT` matching section title, preventing template confusion with regular FIX-PROMPT
+- **Reordered document sections by mode** — Review-mode templates (Output Structure, Example, FIX-PROMPT, FEATURE-PROMPT) moved before Verification Process; check-mode content grouped together after
+- **Fixed "compressed fallback" claim in reference files** — all three reference headers now say "embedded fallback" (accurate; only checklists and UI patterns are genuinely compressed)
+
 ### 2.7.3 (2026-02-24)
 - **Added Java / Kotlin (JVM) checklist** — 5 items: Spring Boot patterns, JPA/Hibernate, build tool hygiene, modern Java (records, sealed classes, virtual threads), testing (JUnit 5 + Testcontainers). Detection table already promised "JVM-specific" — now it delivers
 - **Added C# / .NET checklist** — 5 items: API patterns (minimal/controller), Entity Framework Core, async/await with CancellationToken, nullable reference types, dependency injection lifetimes. Detection table already promised ".NET-specific" — now it delivers

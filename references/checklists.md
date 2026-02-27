@@ -1,7 +1,7 @@
 # Checklists
 
 > **Customization Layer.** Edit THIS file to override the embedded defaults in SKILL.md.
-> SKILL.md contains a compressed fallback — this file is the full-detail authoritative source.
+> SKILL.md contains an embedded fallback — this file is the full-detail authoritative source.
 > Your changes here take priority. SKILL.md embedded is only used when this file is missing.
 
 ---

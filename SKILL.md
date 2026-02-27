@@ -1,11 +1,12 @@
 ---
 name: brutal-honest
 description: Ruthless expert analysis for code/UI/architecture. Tech-stack agnostic.
-author: gakuseei
-author_url: https://github.com/Gakuseei
-version: 2.7.3
-last-updated: 2026-02-24
-allowed-tools: [Read, Glob, Grep, Bash]
+allowed-tools: Read Glob Grep Bash
+metadata:
+  author: gakuseei
+  author_url: https://github.com/Gakuseei
+  version: "2.7.4"
+  last-updated: "2026-02-27"
 ---
 
 # brutal-honest
@@ -286,14 +287,16 @@ Use this if `references/ui-patterns.md` not found.
 
 ## Conditional Output Logic
 
-Check user prompt for keywords ["-fix"], ["-features"], and ["-check"].
+Check user prompt for keywords ["-fix"], ["-features"], and ["-check"]. Evaluate top-to-bottom, **first match wins** — do NOT combine branches:
 
-**IF "-check" present** → Run Verification Process (see below), skip normal Review
-**IF "-check -fix"** → Verification + FIX-PROMPT for failed items
-**IF "-fix" only** → Review + FIX-PROMPT (individual or phased if >10 issues)
-**IF "-features" only** → Review + FEATURE-PROMPT (new features, no bugfixes)
-**IF "-fix -features"** → Review + FIX-PROMPT + FEATURE-PROMPT (3 separate blocks)
-**IF no flags** → Review + "Shall I generate the fix prompt or feature ideas?"
+1. **`-check -fix`** → Verification Process ONLY (no review) → append CHECK-FIX-PROMPT after VERDICT for failed items
+2. **`-check`** alone → Verification Process ONLY (no review) → no fix prompt
+3. **`-fix -features`** → Normal Review → FIX-PROMPT + FEATURE-PROMPT (3 separate blocks)
+4. **`-fix`** alone → Normal Review → FIX-PROMPT (individual or phased if >10 issues)
+5. **`-features`** alone → Normal Review → FEATURE-PROMPT (new features, no bugfixes)
+6. **No flags** → Normal Review → "Shall I generate the fix prompt or feature ideas?"
+
+**Key rule:** When `-check` is present (branches 1-2), it REPLACES the normal review entirely. The Verification Process runs INSTEAD OF steps 2-4 of the Analysis Process. Never produce both a review and a verification in the same output. The CHECK-FIX-PROMPT (branch 1) is derived from verification findings — it is NOT the same as the regular FIX-PROMPT (branch 4).
 
 **`-check` syntax:**
 - `-check` — auto-detect phase commits via pattern matching
@@ -306,6 +309,73 @@ Check user prompt for keywords ["-fix"], ["-features"], and ["-check"].
 3. **Load References**: Try external files first, fallback to embedded
 4. **Brutal Review**: Categorize by severity (CRITICAL/MAJOR/MEDIUM/MINOR) — only apply stack-relevant items
 5. **Apply Conditional Output Logic**
+
+### Review Output (when no `-check` flag)
+
+```
+## BRUTAL REVIEW: [Topic]
+
+### CRITICAL
+- [Finding with file/line]
+
+### MAJOR
+- [Finding]
+
+### MEDIUM
+- [Finding]
+
+### MINOR
+- [Finding]
+
+### VERDICT
+One brutal sentence.
+```
+
+### Example
+
+**Input:**
+```bash
+/brutal-honest Review my auth system -fix
+```
+
+**Output:**
+```markdown
+## BRUTAL REVIEW: Authentication
+
+### CRITICAL
+- Hardcoded API key - config.js:12 (security disaster)
+
+### VERDICT
+Security Swiss cheese. Fix CRITICAL before prod.
+
+### FIX-PROMPT
+"Fix auth system:
+config.js:12 Move API_KEY to environment variables (.env file or platform secrets manager)
+Rules: NO AI comments, test after change"
+```
+
+### FIX-PROMPT (if "-fix" requested)
+```
+## FIX-PROMPT
+
+Context: [What was analyzed]
+Issues: [Key problems from review]
+Requirements: [Specific fixes with file/line references]
+```
+
+> 10 Issues: Phase 1: CRITICAL fixes only | Phase 2: MAJOR fixes only | Phase 3: MEDIUM+MINOR combined
+
+### FEATURE-PROMPT (if "-features" requested)
+```
+## FEATURE-PROMPT
+
+Context: [What was analyzed]
+Current State: [Brief summary of existing functionality]
+Feature Ideas: [3-5 concrete, implementable feature suggestions]
+Priority: [High/Medium/Low with rationale]
+```
+
+---
 
 ### Verification Process (when `-check` is used)
 
@@ -468,7 +538,7 @@ Items or checks that were skipped and WHY. This section is MANDATORY even when e
 Appended after VERDICT when both flags are present:
 
 ```
-### FIX-PROMPT
+### CHECK-FIX-PROMPT
 
 Context: Verification of [N] phases found [M] issues ([C] CRITICAL, [J] MAJOR, [D] MEDIUM, [I] MINOR)
 
@@ -497,71 +567,6 @@ Status-to-severity mapping:
 **Severity override:** `PRESENT_BUT_WRONG` is always MAJOR minimum — it is strictly worse than `MISSING`, because code that looks correct but isn't creates false confidence. A missing feature is obvious; a wrong implementation hides behind a keyword match.
 
 ---
-
-## Output Structure
-
-```
-## BRUTAL REVIEW: [Topic]
-
-### CRITICAL
-- [Finding with file/line]
-
-### MAJOR
-- [Finding]
-
-### MEDIUM
-- [Finding]
-
-### MINOR
-- [Finding]
-
-### VERDICT
-One brutal sentence.
-```
-
-## Example
-
-**Input:**
-```bash
-/brutal-honest Review my auth system -fix
-```
-
-**Output:**
-```markdown
-## BRUTAL REVIEW: Authentication
-
-### CRITICAL
-- Hardcoded API key - config.js:12 (security disaster)
-
-### VERDICT
-Security Swiss cheese. Fix CRITICAL before prod.
-
-### FIX-PROMPT
-"Fix auth system:
-config.js:12 Move API_KEY to environment variables (.env file or platform secrets manager)
-Rules: NO AI comments, test after change"
-```
-
-### FIX-PROMPT (if "-fix" requested)
-```
-## FIX-PROMPT
-
-Context: [What was analyzed]
-Issues: [Key problems from review]
-Requirements: [Specific fixes with file/line references]
-```
-
-> 10 Issues: Phase 1: CRITICAL fixes only | Phase 2: MAJOR fixes only | Phase 3: MEDIUM+MINOR combined
-
-### FEATURE-PROMPT (if "-features" requested)
-```
-## FEATURE-PROMPT
-
-Context: [What was analyzed]
-Current State: [Brief summary of existing functionality]
-Feature Ideas: [3-5 concrete, implementable feature suggestions]
-Priority: [High/Medium/Low with rationale]
-```
 
 ## Error Messages
 
