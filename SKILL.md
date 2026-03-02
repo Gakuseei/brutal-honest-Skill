@@ -5,8 +5,8 @@ allowed-tools: Read Glob Grep Bash
 metadata:
   author: gakuseeii
   author_url: https://gitlab.com/Gakuseeii
-  version: "2.7.4"
-  last-updated: "2026-02-27"
+  version: "2.7.5"
+  last-updated: "2026-03-02"
 ---
 
 # brutal-honest
@@ -287,7 +287,7 @@ Use this if `references/ui-patterns.md` not found.
 
 ## Conditional Output Logic
 
-Check user prompt for keywords ["-fix"], ["-features"], and ["-check"]. Evaluate top-to-bottom, **first match wins** — do NOT combine branches:
+Check user prompt for keywords ["-fix"], ["-features"] (or ["-feature"]), and ["-check"]. Both `-feature` and `-features` are valid and treated identically. Evaluate top-to-bottom, **first match wins** — do NOT combine branches:
 
 1. **`-check -fix`** → Verification Process ONLY (no review) → append CHECK-FIX-PROMPT after VERDICT for failed items
 2. **`-check`** alone → Verification Process ONLY (no review) → no fix prompt
