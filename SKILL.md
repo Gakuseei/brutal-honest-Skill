@@ -231,6 +231,44 @@ Report ONLY real findings backed by evidence. Zero tolerance for guessing.
 DO NOT write any code or make any changes. Review and report only.
 ````
 
+## Phase 5: Aggregation + Output
+
+After all SubAgents complete, aggregate their findings into a single review.
+
+### Step 1: Collect
+Gather all findings from all review agents.
+
+### Step 2: Deduplicate
+If multiple agents flagged the same issue, keep the most detailed finding and note which agents found it.
+
+### Step 3: Sort
+Order by severity: CRITICAL → MAJOR → MEDIUM → MINOR
+
+### Step 4: Format Output
+
+````
+## BRUTAL REVIEW: [Topic]
+
+**Stack:** [detected] | **Scope:** [diff/project/files] | **Agents:** [which ran]
+
+### CRITICAL
+- [Finding] — `file:line` — [why it matters]
+
+### MAJOR
+- [Finding] — `file:line` — [why it matters]
+
+### MEDIUM
+- [Finding] — `file:line`
+
+### MINOR
+- [Finding] — `file:line`
+
+### VERDICT
+One brutal sentence. No sugarcoating.
+````
+
+Omit empty severity sections. If no findings in a severity level, don't include that heading.
+
 ## Stack Detection (Step 0 — before analysis)
 
 Detect the project's tech stack before applying any checklist. This determines which severity items and checklist sections are relevant.
