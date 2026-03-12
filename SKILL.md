@@ -154,6 +154,83 @@ Ask via `AskUserQuestion` when you find something that COULD be a deliberate dec
 5. **If nothing suspicious found → skip Phase 3 entirely** — don't ask questions for the sake of asking
 6. **When in doubt: ASK** — one unnecessary question is infinitely better than one false finding that wastes the user's time
 
+## Phase 4: Parallel SubAgent Reviews
+
+Spawn one SubAgent per selected review domain using the Agent tool. Only spawn agents for domains the user selected in Phase 1 Step 1. Launch ALL selected agents in parallel (single message with multiple Agent tool calls).
+
+### What Each Agent Receives
+
+1. The relevant checklist section (pasted inline — NOT a file reference)
+2. File contents from Phase 2 (pasted inline or with paths for large files)
+3. Research results from Phase 2 (framework versions, CVE findings, best practices)
+4. User's answers from Phase 3 (what's intentional, what to ignore)
+5. The Iron Rules (copied into every agent prompt)
+6. Stack-specific checklist items for their domain
+
+### Agent Definitions
+
+**Security Agent**
+- Checklist: Security section from references/checklists.md
+- Focus: OWASP top 10, hardcoded secrets, auth patterns, input validation, CSRF, dependency CVEs, AI security
+- Must: Check every import, every API call, every user input handler, every env variable usage
+
+**Architecture & Code Agent**
+- Checklist: Architecture + Testing sections from references/checklists.md
+- Focus: File structure, God objects/functions, circular dependencies, DRY violations, error handling, type safety, test coverage
+- Must: Trace dependency graph, check module boundaries, verify error paths, assess test quality
+
+**Performance Agent**
+- Checklist: Performance section from references/checklists.md
+- Focus: Core Web Vitals / frame budget, asset optimization, caching strategy, lazy loading, N+1 queries, bundle size
+- Must: Check asset sizes, loading patterns, database queries, render paths, memory usage
+
+**UI/UX & Accessibility Agent**
+- Checklist: Accessibility section from references/checklists.md + references/ui-patterns.md
+- Focus: WCAG 2.2, keyboard navigation, screen readers, mobile/responsive, visual hierarchy, anti-AI-slop patterns
+- Must: Check semantic HTML, ARIA labels, color contrast, focus management, layout patterns
+- Only spawn for web/mobile/game projects — skip for CLI tools, libraries, APIs without UI
+
+### Agent Prompt Template
+
+Use this template when dispatching each agent via the Agent tool:
+
+````
+You are a {DOMAIN} review agent performing a brutal-honest code review.
+
+## Iron Rules (non-negotiable)
+1. Read EVERY file before judging — no exceptions
+2. Include file:line for EVERY finding — no evidence = no finding
+3. Use Grep to verify patterns before claiming they're missing
+4. If uncertain → mark as "UNVERIFIED" and explain what you couldn't confirm
+5. NEVER invent findings — hallucinated findings are worse than no findings
+
+## Your Checklist
+{PASTE RELEVANT CHECKLIST SECTION}
+
+## Stack-Specific Items
+{PASTE STACK-SPECIFIC CHECKLIST ITEMS FOR THIS DOMAIN}
+
+## Research Context
+{PASTE FRAMEWORK VERSION + CVE + BEST PRACTICE FINDINGS FROM PHASE 2}
+
+## User Clarifications
+{PASTE PHASE 3 ANSWERS — what's intentional, what to ignore}
+
+## Files to Review
+{PASTE FILE CONTENTS OR PATHS}
+
+## Instructions
+Review every file against your checklist. For each finding report:
+- **Severity:** CRITICAL / MAJOR / MEDIUM / MINOR (use severity guide definitions)
+- **Location:** file:line
+- **Issue:** What's wrong
+- **Impact:** Why it matters
+- **Fix:** Suggested fix (one sentence)
+
+Report ONLY real findings backed by evidence. Zero tolerance for guessing.
+DO NOT write any code or make any changes. Review and report only.
+````
+
 ## Stack Detection (Step 0 — before analysis)
 
 Detect the project's tech stack before applying any checklist. This determines which severity items and checklist sections are relevant.
