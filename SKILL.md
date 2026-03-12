@@ -133,16 +133,16 @@ Ask the user when you find something that COULD be a deliberate decision:
   - Yes, I'm testing something (Recommended if code looks deliberate)
   - No, that's a bug — flag it
 - **Unusual patterns** — "Found `dangerouslySkipPermissions: true` in `file:line`. On purpose?"
-  - Yes, deliberate choice
+  - Yes, deliberate choice (Recommended if pattern looks intentional)
   - No, should be removed
 - **Outdated versions** — "[Framework] v[old] detected, current stable is v[new]. Flag as MAJOR?"
-  - Yes, upgrade is important
+  - Yes, upgrade is important (Recommended if 2+ major versions behind)
   - No, staying on this version deliberately
 - **Deactivated code** — "Code block at `file:line` is commented out / feature-flagged off. Intended?"
-  - Yes, temporary for testing
+  - Yes, temporary for testing (Recommended if recently added)
   - No, forgot to clean up
 - **Security concerns** — "Found [potential issue] in `file:line`. Deep security audit?"
-  - Yes, check thoroughly
+  - Yes, check thoroughly (Recommended for auth/secrets/input handling)
   - No, it's safe in this context
 
 ### Core Rules for Questions
@@ -201,8 +201,9 @@ You are a {DOMAIN} review agent performing a brutal-honest code review.
 1. Read EVERY file before judging — no exceptions
 2. Include file:line for EVERY finding — no evidence = no finding
 3. Use Grep to verify patterns before claiming they're missing
-4. If uncertain → mark as "UNVERIFIED" and explain what you couldn't confirm
-5. NEVER invent findings — hallucinated findings are worse than no findings
+4. If uncertain → mark as "UNVERIFIED" and explain what you couldn't confirm (you cannot ask the user directly — only the lead agent can)
+5. If something looks intentional → flag as "POSSIBLY INTENTIONAL" instead of a finding
+6. NEVER invent findings — hallucinated findings are worse than no findings
 
 ## Your Checklist
 {PASTE RELEVANT CHECKLIST SECTION}
@@ -285,13 +286,13 @@ After presenting the review, ask the user what to do next:
 **How do you want to handle the findings?**
 
 1. **Fix via SubAgents (Recommended)** — Phase-by-phase: Implement → Spec Review → Code Quality Review → Commit. Cheapest and most reliable.
-2. **Fix via Agent Teams** — Parallel execution with persistent agents. More powerful but 3-5x more expensive in tokens.
+2. **Fix via Agent Teams** — Same phase structure as SubAgents, but uses TeamCreate for parallel persistent agents. 3-5x more expensive in tokens.
 3. **Fix it yourself** — I'll assist in chat but you drive the fixes.
 4. **Discuss first** — Let's talk through the findings before deciding on action.
 
-## Phase 7: Fix Cycle (subagent-driven-development)
+## Phase 7: Fix Cycle
 
-When "Fix via SubAgents" is selected, group findings into phases by severity:
+When "Fix via SubAgents" or "Fix via Agent Teams" is selected, group findings into phases by severity. For Agent Teams, use TeamCreate and assign tasks to persistent teammates instead of spawning fresh SubAgents per step — otherwise the phase structure is identical.
 
 - **Phase 1:** CRITICAL fixes (must fix immediately)
 - **Phase 2:** MAJOR fixes (ship blockers)
@@ -342,6 +343,7 @@ Spawn via Agent tool after Implementer completes:
 - Job: Verify EACH finding is actually fixed by reading the actual code
 - Does NOT trust the Implementer's claims — reads code independently
 - Checks: Was the finding addressed? Is the fix correct? Were any findings missed?
+- Uses the same Return Protocol (DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED)
 - ✅ All fixed → proceed to Step 3
 - ❌ Issues found → describe what's wrong → Implementer fixes → Spec Review re-runs
 
@@ -350,6 +352,7 @@ Spawn via Agent tool after Implementer completes:
 Spawn via Agent tool after Spec Review passes:
 - Receives: git diff of all changes in this phase
 - Job: Verify fix quality — no new bugs, no regressions, clean code, consistent style
+- Uses the same Return Protocol (DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED)
 - ✅ Approved → proceed to Verification Gate
 - ❌ Issues found → describe what's wrong → Implementer fixes → Code Quality re-reviews
 
@@ -744,7 +747,7 @@ From each phase commit's body (`git log -1 --format="%b" <hash>`):
 
 ---
 
-## Sync Points (for `-check` Cross-Reference Verification)
+## Sync Points (for Verify Commits Cross-Reference Verification)
 
 When verifying that a new feature is integrated at ALL required locations, use the detected stack to determine sync points:
 
