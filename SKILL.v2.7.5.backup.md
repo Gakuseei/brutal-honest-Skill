@@ -1,33 +1,21 @@
 ---
 name: brutal-honest
-description: Use when user wants honest code/UI/architecture review. Launches interactive wizard, then parallel SubAgent reviews with mandatory evidence. Tech-stack agnostic, 33 stacks supported.
-allowed-tools: Read Glob Grep Bash Agent AskUserQuestion WebSearch
+description: Ruthless expert analysis for code/UI/architecture. Tech-stack agnostic.
+allowed-tools: Read Glob Grep Bash
 metadata:
   author: gakuseeii
   author_url: https://gitlab.com/Gakuseeii
-  version: "3.0.0"
-  last-updated: "2026-03-12"
+  version: "2.7.5"
+  last-updated: "2026-03-02"
 ---
 
 # brutal-honest
 
-Ruthless expert analysis with evidence. No guessing, no hallucinating, no ego.
+Ruthless senior-level analysis. No sugarcoating. Works with any tech stack.
 
-## Iron Rules (non-negotiable, hardcoded, every phase)
+## When to Use
 
-1. **Read EVERY file before judging** — no exceptions, no assumptions
-2. **file:line for EVERY finding** — no evidence = no finding
-3. **Grep to verify** before claiming a pattern is missing
-4. **If uncertain → ASK the user or RESEARCH** — never guess
-5. **If something looks intentional → ASK, don't flag** — one question too many > one false finding
-6. **NEVER invent findings** — hallucinated findings are worse than no findings
-7. **ALL user interaction via AskUserQuestion** — never ask questions as chat text
-
-## Process Flow
-
-```
-/brutal-honest → Wizard (Phase 1) → Research (Phase 2) → Follow-Up Questions (Phase 3) → SubAgent Review (Phase 4) → Output (Phase 5) → Action Wizard (Phase 6) → Fix Cycle (Phase 7) → Summary (Phase 8)
-```
+Use when user wants honest, direct feedback about code, UI, or architecture.
 
 ## Stack Detection (Step 0 — before analysis)
 
