@@ -84,42 +84,54 @@ Ask the user (multiple selections allowed):
 
 ## Phase 2: Research + Discovery (automatic)
 
-After the wizard completes, research runs automatically. No user input needed — the skill decides when web research is necessary.
+After the wizard completes, research runs automatically via SubAgents. The Main Chat stays lean — it only reads config files and builds a file list. All heavy reading is delegated.
 
-### Step 1: Stack Detection
+### Step 1: Stack Detection (Main Chat)
 
-Use the Stack Detection table below to identify the project's tech stack. Read config files (package.json, go.mod, pyproject.toml, etc.) — do NOT guess from file extensions alone.
+Read ONLY config files to detect the stack: `package.json`, `go.mod`, `pyproject.toml`, `Cargo.toml`, `composer.json`, etc. Use the Stack Detection table below. Do NOT read source files yet.
 
-### Step 2: File Collection
+### Step 2: File Collection (Main Chat)
 
-Based on the scope selected in Step 2 of the wizard:
-- **git diff:** Run `git diff --name-only` (or `git diff HEAD --name-only` for staged changes)
-- **Entire project:** Glob for source files, prioritize: 1) Config files 2) Entry points 3) Core logic. Max 30 files.
-- **Specific files:** Use the user's specified paths
+Based on the scope selected in the wizard:
+- **git diff:** Run `git diff --name-only` (or `git diff HEAD --name-only` for staged changes) → file path list
+- **Entire project:** Glob for source files → file path list. Prioritize: 1) Config files 2) Entry points 3) Core logic. Max 30 files.
+- **Specific files:** Use the user's specified paths → file path list
 
-### Step 3: Read All Files
+Output: A list of file paths. Do NOT read these files in the Main Chat.
 
-**Read EVERY collected file using the Read tool.** This is mandatory. Do not skip files. Do not assume content from filenames. Actually read and understand the content before any review.
+### Step 3: Dispatch SubAgents (parallel)
 
-### Step 4: Automatic Web Research
+Launch TWO SubAgents in parallel (single message with multiple Agent tool calls):
 
-When uncertain about anything, spawn a Web Search SubAgent via the Agent tool:
-- **Framework versions:** Is the detected version current stable? Check "[framework] latest stable version 2026"
-- **Known CVEs:** If Security review selected, search for vulnerabilities in detected dependencies
-- **Best practices:** If Architecture review selected, search for current recommended patterns
-- **Unknown patterns:** If you encounter code patterns you don't recognize, research them before judging
+**File Scanner SubAgent:**
+- Receives: The file path list from Step 2
+- Job: Read EVERY file on the list. For each file, produce:
+  - **Summary** (1-2 sentences): What the file does, its role in the project
+  - **Suspicious patterns**: Disabled features, commented-out code, unusual patterns, feature flags
+  - **Dependencies**: Import statements, version references
+- Return: Structured summary of all files + list of suspicious patterns for Phase 3
 
-Research results are passed to all review agents as context in Phase 4.
+**Web Research SubAgent:**
+- Receives: Stack info + dependency list from config files (read in Step 1)
+- Job: Research everything the model cannot know from training data:
+  - **Current stable versions** of all detected frameworks and major dependencies
+  - **Known CVEs** for detected dependencies (always, not just for Security reviews)
+  - **API documentation** for project-specific tools (e.g., Ollama API, specific SDKs)
+  - **Competitor implementations** — how similar projects solve the same problems
+  - **Domain-specific patterns** — best practices the model might not know
+  - **Anything uncertain** — if the agent encounters something it's not confident about, it searches
+- Principle: "If you can't be 100% sure from training data alone → search for it"
+- Return: Research findings organized by topic
 
-### Step 5: Understand the Codebase
+<HARD-GATE>
+The Web Research SubAgent is MANDATORY. It ALWAYS runs, even for small projects. At minimum it checks current stable versions of detected dependencies. The "when uncertain" trigger from v3.1 was too passive — agents never triggered it. Now it's mandatory.
+</HARD-GATE>
 
-Before reviewing, build understanding:
-- What patterns does this codebase follow?
-- What's the architecture (monolith, microservices, modular)?
-- What looks intentional vs accidental?
-- What's disabled, commented out, or feature-flagged?
+### Step 4: Collect Results
 
-Flag anything suspicious for Phase 3 follow-up questions.
+Main Chat receives summaries from both SubAgents. These summaries (NOT raw file contents) are used for:
+- Phase 3 follow-up questions (based on suspicious patterns)
+- Phase 4 review agent context (summaries + research + file paths)
 
 ## Phase 3: Informed Follow-Up Questions
 
