@@ -2,9 +2,9 @@
 
 # brutal-honest
 
-**Ruthless code review. No sugarcoating. Any tech stack.**
+**Ruthless code review with evidence. No guessing, no hallucinating, no ego.**
 
-[![Version](https://img.shields.io/badge/v2.7.4-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
+[![Version](https://img.shields.io/badge/v3.0.0-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 [![Stacks](https://img.shields.io/badge/33_stacks-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 [![AI Agnostic](https://img.shields.io/badge/any_LLM-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
 
@@ -27,29 +27,32 @@ cp -r brutal-honest ./.agents/skills/
 # Any LLM — paste SKILL.md as system context
 ```
 
-## Commands
+## Usage
 
 ```bash
-# Review
-/brutal-honest Review src/                      # Review with severity breakdown
-/brutal-honest Review my auth module            # Review specific module
-
-# Review + Fix
-/brutal-honest Review src/ -fix                 # Review + generate fix prompt
-/brutal-honest Review my app -fix -features     # Review + fix prompt + feature ideas
-
-# Features only
-/brutal-honest Review my app -features          # Review + feature suggestions
-
-# Verify implementation
-/brutal-honest -check                           # Auto-detect phase commits, verify against git history
-/brutal-honest -check 3                         # Verify last 3 commits as phases
-/brutal-honest -check -fix                      # Verify + generate fix prompt for failed items
+# Start a review — wizard guides you through options
+/brutal-honest Review src/
+/brutal-honest Review my auth module
+/brutal-honest Review the whole project
 ```
+
+No flags to memorize. The interactive wizard asks what to review, how to review, and what extras you want.
 
 ## How It Works
 
-**Review** — Auto-detects your stack, applies framework-specific checklists, categorizes every finding by severity.
+```
+/brutal-honest → Wizard → Research → Follow-Up Questions → SubAgent Review → Output → Action → Fix Cycle → Summary
+```
+
+**1. Wizard** — Choose what to review (Security, Architecture, Performance, UI/UX), scope (diff/project/files), and extras (fix, features, verify).
+
+**2. Research** — Auto-detects stack, reads all files, checks framework versions, searches for CVEs and best practices when uncertain.
+
+**3. Follow-Up Questions** — Asks about suspicious patterns AFTER reading code. Disabled features? Unusual configs? The AI asks before assuming.
+
+**4. Parallel SubAgent Reviews** — One agent per domain, all running in parallel. Every finding requires file:line evidence. No guessing.
+
+**5. Output** — Findings sorted by severity with evidence:
 
 ```
 CRITICAL    — security holes, crashes, data loss
@@ -60,11 +63,7 @@ MINOR       — style issues, debug code
 VERDICT     — one brutal sentence
 ```
 
-**Fix** (`-fix`) — Generates a copy-paste fix prompt, phased by severity. CRITICAL first, then MAJOR, then the rest.
-
-**Features** (`-features`) — Concrete feature ideas with priority (High/Medium/Low).
-
-**Verify** (`-check`) — 4-step skeptical pipeline that reads your git history and proves fixes actually work: Existence + Correctness → Cross-Reference → Regression → Devil's Advocate.
+**6. Fix Cycle** — Choose how to fix: SubAgents (recommended), Agent Teams, or in-chat. SubAgent mode runs Implement → Spec Review → Code Quality Review → Commit per severity phase.
 
 ## Supported Stacks
 

@@ -1,5 +1,18 @@
 # Changelog
 
+### 3.0.0 (2026-03-12)
+- **BREAKING: Complete architecture rewrite** — removed `-fix`, `-feature`, `-check` flags
+- **Added Interactive Wizard** — 3-step `AskUserQuestion` flow: review scope, settings, extras
+- **Added Parallel SubAgent Reviews** — Security, Architecture, Performance, UI/UX agents run in parallel
+- **Added Iron Rules** — mandatory file reading, file:line evidence, no hallucinations, Grep verification
+- **Added Informed Follow-Up Questions** — asks about suspicious patterns AFTER reading code, not before
+- **Added Automatic Web Research** — spawns Web Search SubAgent for framework versions, CVEs, best practices
+- **Added subagent-driven Fix Cycle** — Implement → Spec Review → Code Quality Review → Commit per severity phase
+- **Added Feature Scout SubAgent** — explores project and suggests 3-5 implementable features
+- **Added "Ask, don't assume" rule** — disabled features and unusual patterns trigger user questions, not false findings
+- **Added Human-readable Final Summary** — plain language, no line numbers
+- **Preserved** all 33 stack detections, checklists, severity guide, UI patterns, verification pipeline, references directory
+
 ### 2.7.5 (2026-03-02)
 - **Accept both `-feature` and `-features`** — Conditional Output Logic now treats both flags identically, preventing silent fallthrough when singular form is used
 
