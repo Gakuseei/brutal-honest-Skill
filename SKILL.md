@@ -332,7 +332,8 @@ Skip empty phases. If no CRITICAL findings, start with Phase 2.
 **Step 1: Implementer SubAgent**
 
 Spawn via Agent tool:
-- Receives: All findings for this severity phase + relevant file contents
+- Receives: All findings for this severity phase (Severity + file:line + Issue + Impact + Fix) and the relevant file paths
+- Does NOT receive file contents — reads files itself using the Read tool
 - Job: Implement each fix, write tests where appropriate, commit changes, self-review
 - Must follow Iron Rules: read files before changing, verify fixes work
 
@@ -366,7 +367,8 @@ Bad work is worse than no work. You will not be penalized for escalating.
 **Step 2: Spec Review SubAgent**
 
 Spawn via Agent tool after Implementer completes:
-- Receives: Original findings for this phase + Implementer's report
+- Receives: Original findings for this phase + Implementer's report + relevant file paths
+- Does NOT receive file contents — reads files itself using the Read tool
 - Job: Verify EACH finding is actually fixed by reading the actual code
 - Does NOT trust the Implementer's claims — reads code independently
 - Checks: Was the finding addressed? Is the fix correct? Were any findings missed?
