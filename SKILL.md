@@ -82,6 +82,45 @@ Use `AskUserQuestion`:
   - label: "Verify Commits", description: "Run verification pipeline against recent git history"
   - label: "Review only (Recommended)", description: "Just the brutal review, no extras"
 
+## Phase 2: Research + Discovery (automatic)
+
+After the wizard completes, research runs automatically. No user input needed — the skill decides when web research is necessary.
+
+### Step 1: Stack Detection
+
+Use the Stack Detection table below to identify the project's tech stack. Read config files (package.json, go.mod, pyproject.toml, etc.) — do NOT guess from file extensions alone.
+
+### Step 2: File Collection
+
+Based on the scope selected in Step 2 of the wizard:
+- **git diff:** Run `git diff --name-only` (or `git diff HEAD --name-only` for staged changes)
+- **Entire project:** Glob for source files, prioritize: 1) Config files 2) Entry points 3) Core logic. Max 30 files.
+- **Specific files:** Use the user's specified paths
+
+### Step 3: Read All Files
+
+**Read EVERY collected file using the Read tool.** This is mandatory. Do not skip files. Do not assume content from filenames. Actually read and understand the content before any review.
+
+### Step 4: Automatic Web Research
+
+When uncertain about anything, spawn a Web Search SubAgent via the Agent tool:
+- **Framework versions:** Is the detected version current stable? Check "[framework] latest stable version 2026"
+- **Known CVEs:** If Security review selected, search for vulnerabilities in detected dependencies
+- **Best practices:** If Architecture review selected, search for current recommended patterns
+- **Unknown patterns:** If you encounter code patterns you don't recognize, research them before judging
+
+Research results are passed to all review agents as context in Phase 4.
+
+### Step 5: Understand the Codebase
+
+Before reviewing, build understanding:
+- What patterns does this codebase follow?
+- What's the architecture (monolith, microservices, modular)?
+- What looks intentional vs accidental?
+- What's disabled, commented out, or feature-flagged?
+
+Flag anything suspicious for Phase 3 follow-up questions.
+
 ## Stack Detection (Step 0 — before analysis)
 
 Detect the project's tech stack before applying any checklist. This determines which severity items and checklist sections are relevant.
