@@ -121,6 +121,39 @@ Before reviewing, build understanding:
 
 Flag anything suspicious for Phase 3 follow-up questions.
 
+## Phase 3: Informed Follow-Up Questions
+
+After reading the actual code, ask targeted questions based on REAL findings. Every question uses `AskUserQuestion` with recommended answers.
+
+### When to Ask
+
+Ask via `AskUserQuestion` when you find something that COULD be a deliberate decision:
+
+- **Disabled features** — "Feature X is disabled via early return at `file:line`. Intentional?"
+  - Yes, I'm testing something (Recommended if code looks deliberate)
+  - No, that's a bug — flag it
+- **Unusual patterns** — "Found `dangerouslySkipPermissions: true` in `file:line`. On purpose?"
+  - Yes, deliberate choice
+  - No, should be removed
+- **Outdated versions** — "[Framework] v[old] detected, current stable is v[new]. Flag as MAJOR?"
+  - Yes, upgrade is important
+  - No, staying on this version deliberately
+- **Deactivated code** — "Code block at `file:line` is commented out / feature-flagged off. Intended?"
+  - Yes, temporary for testing
+  - No, forgot to clean up
+- **Security concerns** — "Found [potential issue] in `file:line`. Deep security audit?"
+  - Yes, check thoroughly
+  - No, it's safe in this context
+
+### Core Rules for Questions
+
+1. **Only ask about things you ACTUALLY FOUND** — never hypothetical questions
+2. **Maximum 4 questions per AskUserQuestion call** (tool limit) — batch related questions
+3. **Include (Recommended) on the option you'd suggest** based on what the code looks like
+4. **Answers inform the review** — intentional patterns are excluded from findings, confirmed bugs are flagged
+5. **If nothing suspicious found → skip Phase 3 entirely** — don't ask questions for the sake of asking
+6. **When in doubt: ASK** — one unnecessary question is infinitely better than one false finding that wastes the user's time
+
 ## Stack Detection (Step 0 — before analysis)
 
 Detect the project's tech stack before applying any checklist. This determines which severity items and checklist sections are relevant.
