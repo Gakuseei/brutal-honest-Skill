@@ -1,5 +1,15 @@
 # Changelog
 
+### 3.1.0 (2026-03-12)
+- **Removed AskUserQuestion dependency** — all questions now conversational chat text, compatible with bypass permissions mode
+- **Fixed description** — now describes trigger conditions, not workflow (prevents Claude from shortcutting the skill)
+- **Added `<HARD-GATE>` tags** — Iron Rules and Verification Gate wrapped in enforcement tags (Superpowers pattern)
+- **Added Red Flags table** — 8 rationalization patterns that trigger immediate STOP and correction
+- **Added structured Return Protocol** — all SubAgents must return DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED
+- **Added Implementer safeguards** — "Before You Begin", "While You Work", "When You're in Over Your Head" sections
+- **Added Escalation Handling** — BLOCKED status triggers context-provide / task-split / user-escalation, never force-retry
+- **Added Verification Gate** — mandatory test/build/lint after each fix phase, wrapped in HARD-GATE
+
 ### 3.0.0 (2026-03-12)
 - **BREAKING: Complete architecture rewrite** — removed `-fix`, `-feature`, `-check` flags
 - **Added Interactive Wizard** — 3-step `AskUserQuestion` flow: review scope, settings, extras

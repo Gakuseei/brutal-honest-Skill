@@ -1,11 +1,11 @@
 ---
 name: brutal-honest
-description: Use when user wants honest code/UI/architecture review. Launches interactive wizard, then parallel SubAgent reviews with mandatory evidence. Tech-stack agnostic, 33 stacks supported.
+description: Use when user wants honest, evidence-backed code review. Every finding requires file:line proof. Covers security, architecture, performance, UI/UX for 33+ tech stacks.
 allowed-tools: Read Glob Grep Bash Agent WebSearch
 metadata:
   author: gakuseeii
   author_url: https://gitlab.com/Gakuseeii
-  version: "3.0.0"
+  version: "3.1.0"
   last-updated: "2026-03-12"
 ---
 
@@ -13,7 +13,8 @@ metadata:
 
 Ruthless expert analysis with evidence. No guessing, no hallucinating, no ego.
 
-## Iron Rules (non-negotiable, hardcoded, every phase)
+<HARD-GATE>
+## Iron Rules (non-negotiable, every phase)
 
 1. **Read EVERY file before judging** — no exceptions, no assumptions
 2. **file:line for EVERY finding** — no evidence = no finding
@@ -21,6 +22,22 @@ Ruthless expert analysis with evidence. No guessing, no hallucinating, no ego.
 4. **If uncertain → ASK the user or RESEARCH** — never guess
 5. **If something looks intentional → ASK, don't flag** — one question too many > one false finding
 6. **NEVER invent findings** — hallucinated findings are worse than no findings
+</HARD-GATE>
+
+## Red Flags — STOP Immediately
+
+If you catch yourself thinking any of these, STOP and correct:
+
+| Thought | Reality |
+|---------|---------|
+| "I'll just skim this file" | Read it fully or don't review it |
+| "This pattern is probably missing" | Grep first. No grep = no claim |
+| "The file is too large to read" | Read it in chunks. Size is not an excuse |
+| "I'm confident without checking" | Confidence without evidence = hallucination |
+| "This is obviously wrong" | Obvious to whom? Verify with code |
+| "I'll flag it just in case" | No evidence = no finding. Period |
+| "The user probably knows about this" | If it's a real finding, report it with evidence |
+| "I don't need to research this" | If uncertain about versions/CVEs/patterns — research |
 
 ## Process Flow
 
@@ -212,6 +229,15 @@ Review every file against your checklist. For each finding report:
 
 Report ONLY real findings backed by evidence. Zero tolerance for guessing.
 DO NOT write any code or make any changes. Review and report only.
+
+## Return Protocol
+
+End your review with one of these statuses:
+
+- **DONE** — Review complete, all findings have file:line evidence.
+- **DONE_WITH_CONCERNS** — Review complete, but some areas couldn't be fully verified. List what and why.
+- **NEEDS_CONTEXT** — Can't complete review without more information. List exactly what you need.
+- **BLOCKED** — Can't review at all (files unreadable, wrong stack, etc.). Explain the blocker.
 ````
 
 ## Phase 5: Aggregation + Output
@@ -280,8 +306,34 @@ Skip empty phases. If no CRITICAL findings, start with Phase 2.
 Spawn via Agent tool:
 - Receives: All findings for this severity phase + relevant file contents
 - Job: Implement each fix, write tests where appropriate, commit changes, self-review
-- Reports: What was fixed, what was tested, files changed, any concerns
 - Must follow Iron Rules: read files before changing, verify fixes work
+
+Include in the agent prompt:
+
+```
+## Before You Begin
+
+If you have questions about requirements, approach, or scope — ask them now.
+Raise any concerns before starting work.
+
+## While You Work
+
+If you encounter something unexpected or unclear — ask, don't guess.
+
+## Return Protocol
+
+End your work with one of these statuses:
+
+- **DONE** — All fixes implemented and verified.
+- **DONE_WITH_CONCERNS** — Fixes implemented but I have concerns about [X]. Review carefully.
+- **NEEDS_CONTEXT** — Can't complete without more information: [what you need].
+- **BLOCKED** — Can't proceed: [blocker]. Do NOT force a bad fix.
+
+## When You're in Over Your Head
+
+It is always OK to stop and say "this is too hard for me."
+Bad work is worse than no work. You will not be penalized for escalating.
+```
 
 **Step 2: Spec Review SubAgent**
 
@@ -298,12 +350,40 @@ Spawn via Agent tool after Implementer completes:
 Spawn via Agent tool after Spec Review passes:
 - Receives: git diff of all changes in this phase
 - Job: Verify fix quality — no new bugs, no regressions, clean code, consistent style
-- ✅ Approved → Commit + Push → proceed to next phase
+- ✅ Approved → proceed to Verification Gate
 - ❌ Issues found → describe what's wrong → Implementer fixes → Code Quality re-reviews
 
-**Step 4: Commit + Push**
+**Step 4: Verification Gate (mandatory)**
 
-After both reviews pass, ensure all changes are committed and pushed. Then proceed to next severity phase.
+Before committing and moving to the next phase:
+
+1. Run the project's test/build/lint command (auto-detect from package.json scripts, Makefile, Cargo.toml, etc.)
+2. Read the full output, check exit code
+3. If tests fail → the fix broke something. Re-dispatch Implementer with the failure context
+4. If no test command exists → at minimum run syntax check (node --check, go vet, cargo check, python -m py_compile, etc.)
+5. Only proceed when verification passes
+
+<HARD-GATE>
+Do NOT claim fixes are complete without running verification. Do NOT commit broken code.
+</HARD-GATE>
+
+**Step 5: Commit + Push**
+
+After verification passes, ensure all changes are committed and pushed. Then proceed to next severity phase.
+
+### Handling Agent Status
+
+After each SubAgent returns, check its status:
+
+- **DONE** → proceed to next step
+- **DONE_WITH_CONCERNS** → review the concerns, decide if they're blocking or acceptable, note them for the user
+- **NEEDS_CONTEXT** → provide the missing context and re-dispatch the same agent
+- **BLOCKED** → assess the blocker:
+  1. Context problem → provide more context, re-dispatch
+  2. Task too complex → break into smaller pieces, re-dispatch
+  3. Plan itself is wrong → escalate to user, ask how to proceed
+
+Never ignore a BLOCKED status. Never force-retry without changes.
 
 ### Feature Scout (if selected in Phase 1 wizard)
 
