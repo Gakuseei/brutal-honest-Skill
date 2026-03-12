@@ -302,6 +302,8 @@ Skip empty phases. If no CRITICAL findings, start with Phase 2.
 
 **Create all phase tasks upfront using TaskCreate.** One task per phase (e.g. "Phase 1: CRITICAL fixes", "Phase 2: MAJOR fixes", "Phase 3: MEDIUM + MINOR fixes"). Set blockedBy so Phase 2 is blocked by Phase 1, Phase 3 is blocked by Phase 2. Then work through them in order — mark each as in_progress when starting, completed when done. This gives the user a clear progress view.
 
+**Never skip findings without asking the user.** Fix ALL findings in each phase. If you think a finding should be skipped (e.g. "cosmetic", "by design", "app-wide"), ask the user first — don't decide on your own. The user confirmed these findings during the review; skipping them silently wastes that decision.
+
 ### Per Fix Phase
 
 **Step 1: Implementer SubAgent**
