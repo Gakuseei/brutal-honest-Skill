@@ -180,11 +180,12 @@ Spawn one SubAgent per selected review domain using the Agent tool. Only spawn a
 ### What Each Agent Receives
 
 1. The relevant checklist section (pasted inline — NOT a file reference)
-2. File contents from Phase 2 (pasted inline or with paths for large files)
-3. Research results from Phase 2 (framework versions, CVE findings, best practices)
-4. User's answers from Phase 3 (what's intentional, what to ignore)
-5. The Iron Rules (copied into every agent prompt)
-6. Stack-specific checklist items for their domain
+2. **File paths to review** (NOT file contents — agents read files themselves using the Read tool)
+3. **File Scanner summaries** from Phase 2 (1-2 sentence context per file, so agents know what to focus on)
+4. Research results from Phase 2 (framework versions, CVE findings, best practices, API docs)
+5. User's answers from Phase 3 (what's intentional, what to ignore)
+6. The Iron Rules (copied into every agent prompt)
+7. Stack-specific checklist items for their domain
 
 ### Agent Definitions
 
@@ -237,7 +238,10 @@ You are a {DOMAIN} review agent performing a brutal-honest code review.
 {PASTE PHASE 3 ANSWERS — what's intentional, what to ignore}
 
 ## Files to Review
-{PASTE FILE CONTENTS OR PATHS}
+{LIST OF FILE PATHS — you MUST read each file yourself using the Read tool before reviewing it}
+
+## File Scanner Context
+{PASTE 1-2 SENTENCE SUMMARIES PER FILE FROM PHASE 2 SCANNER — use these to prioritize, but always read the actual files}
 
 ## Instructions
 Review every file against your checklist. For each finding report:
