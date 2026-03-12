@@ -269,6 +269,77 @@ One brutal sentence. No sugarcoating.
 
 Omit empty severity sections. If no findings in a severity level, don't include that heading.
 
+## Phase 6: Action Wizard
+
+After presenting the review, ask the user what to do next via `AskUserQuestion`:
+
+- **header:** "Next Step"
+- **question:** "How do you want to handle the findings?"
+- **multiSelect:** false
+- **options:**
+  - label: "Fix via SubAgents (Recommended)", description: "Phase-by-phase: Implement → Spec Review → Code Quality Review → Commit. Cheapest and most reliable."
+  - label: "Fix via Agent Teams", description: "Parallel execution with persistent agents. More powerful but 3-5x more expensive in tokens."
+  - label: "Fix it yourself", description: "I'll assist in chat but you drive the fixes."
+  - label: "Discuss first", description: "Let's talk through the findings before deciding on action."
+
+## Phase 7: Fix Cycle (subagent-driven-development)
+
+When "Fix via SubAgents" is selected, group findings into phases by severity:
+
+- **Phase 1:** CRITICAL fixes (must fix immediately)
+- **Phase 2:** MAJOR fixes (ship blockers)
+- **Phase 3:** MEDIUM + MINOR fixes (combined, lowest priority)
+
+Skip empty phases. If no CRITICAL findings, start with Phase 2.
+
+### Per Fix Phase
+
+**Step 1: Implementer SubAgent**
+
+Spawn via Agent tool:
+- Receives: All findings for this severity phase + relevant file contents
+- Job: Implement each fix, write tests where appropriate, commit changes, self-review
+- Reports: What was fixed, what was tested, files changed, any concerns
+- Must follow Iron Rules: read files before changing, verify fixes work
+
+**Step 2: Spec Review SubAgent**
+
+Spawn via Agent tool after Implementer completes:
+- Receives: Original findings for this phase + Implementer's report
+- Job: Verify EACH finding is actually fixed by reading the actual code
+- Does NOT trust the Implementer's claims — reads code independently
+- Checks: Was the finding addressed? Is the fix correct? Were any findings missed?
+- ✅ All fixed → proceed to Step 3
+- ❌ Issues found → describe what's wrong → Implementer fixes → Spec Review re-runs
+
+**Step 3: Code Quality Review SubAgent**
+
+Spawn via Agent tool after Spec Review passes:
+- Receives: git diff of all changes in this phase
+- Job: Verify fix quality — no new bugs, no regressions, clean code, consistent style
+- ✅ Approved → Commit + Push → proceed to next phase
+- ❌ Issues found → describe what's wrong → Implementer fixes → Code Quality re-reviews
+
+**Step 4: Commit + Push**
+
+After both reviews pass, ensure all changes are committed and pushed. Then proceed to next severity phase.
+
+### Feature Scout (if selected in Phase 1 wizard)
+
+After all fix phases complete (or after review-only), spawn a separate SubAgent:
+- Explores the entire project: structure, patterns, features, architecture
+- Suggests 3-5 concrete, implementable features
+- Each suggestion includes: what it does, why it adds value, rough complexity (small/medium/large)
+- Presents suggestions via `AskUserQuestion` for the user to pick favorites
+
+### Verify Commits (if selected in Phase 1 wizard)
+
+Run verification against recent git history:
+- Detect phases from commit subjects (pattern matching)
+- Extract plan items from commit bodies
+- Check: existence + correctness, cross-references, regressions
+- Report as verification table with pass/fail per item
+
 ## Stack Detection (Step 0 — before analysis)
 
 Detect the project's tech stack before applying any checklist. This determines which severity items and checklist sections are relevant.
