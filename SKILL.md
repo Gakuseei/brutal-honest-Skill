@@ -135,36 +135,43 @@ Main Chat receives summaries from both SubAgents. These summaries (NOT raw file 
 
 ## Phase 3: Informed Follow-Up Questions
 
-After reading the actual code, ask targeted questions based on REAL findings. Present questions conversationally with recommended answers.
+After the File Scanner returns suspicious patterns, ask targeted questions based on REAL findings. Questions are asked **one at a time** in the chat.
+
+### Question Format
+
+Ask each question as a numbered-option message. Every option MUST have a clear description explaining what it means and what happens if chosen:
+
+```
+Question 1/N: [Clear question about what was found]
+
+1. **[Option label]** — [1-2 sentences explaining what this means and what the consequence is]
+2. **[Option label]** — [1-2 sentences explaining what this means and what the consequence is]
+3. **[Option label] (Recommended)** — [1-2 sentences explaining why this is recommended]
+
+(Answer with the number, or ask if something is unclear)
+```
 
 ### When to Ask
 
-Ask the user when you find something that COULD be a deliberate decision:
+Ask the user when the File Scanner found something that COULD be a deliberate decision:
 
-- **Disabled features** — "Feature X is disabled via early return at `file:line`. Intentional?"
-  - Yes, I'm testing something (Recommended if code looks deliberate)
-  - No, that's a bug — flag it
-- **Unusual patterns** — "Found `dangerouslySkipPermissions: true` in `file:line`. On purpose?"
-  - Yes, deliberate choice (Recommended if pattern looks intentional)
-  - No, should be removed
+- **Disabled features** — "Feature X is disabled via early return. Intentional?"
+- **Unusual patterns** — "Found `dangerouslySkipPermissions: true`. On purpose?"
 - **Outdated versions** — "[Framework] v[old] detected, current stable is v[new]. Flag as MAJOR?"
-  - Yes, upgrade is important (Recommended if 2+ major versions behind)
-  - No, staying on this version deliberately
-- **Deactivated code** — "Code block at `file:line` is commented out / feature-flagged off. Intended?"
-  - Yes, temporary for testing (Recommended if recently added)
-  - No, forgot to clean up
-- **Security concerns** — "Found [potential issue] in `file:line`. Deep security audit?"
-  - Yes, check thoroughly (Recommended for auth/secrets/input handling)
-  - No, it's safe in this context
+- **Deactivated code** — "Code block is commented out / feature-flagged off. Intended?"
+- **Security concerns** — "Found [potential issue]. Deep security audit?"
 
-### Core Rules for Questions
+### Rules
 
-1. **Only ask about things you ACTUALLY FOUND** — never hypothetical questions
-2. **Batch related questions** — ask multiple related things at once, not one by one
-3. **Include (Recommended) on the option you'd suggest** based on what the code looks like
-4. **Answers inform the review** — intentional patterns are excluded from findings, confirmed bugs are flagged
-5. **If nothing suspicious found → skip Phase 3 entirely** — don't ask questions for the sake of asking
-6. **When in doubt: ASK** — one unnecessary question is infinitely better than one false finding that wastes the user's time
+1. **ONE question per message** — never batch multiple questions. Ask one, wait for the answer, then ask the next
+2. **Only ask about things the File Scanner ACTUALLY FOUND** — never hypothetical questions
+3. **Every option has a description** — no bare labels. The user must understand what each option means without reading code
+4. **Include (Recommended)** on the option you'd suggest, based on what the Scanner found
+5. **If the user asks "what do you mean?"** → explain the context in more detail and re-ask the same question. NEVER skip a question because the user didn't understand it
+6. **If nothing suspicious found → skip Phase 3 entirely** — don't ask questions for the sake of asking
+7. **When in doubt: ASK** — one unnecessary question is infinitely better than one false finding
+8. **Answers inform the review** — intentional patterns are excluded from findings, confirmed bugs are flagged
+9. **Do NOT use the AskUserQuestion tool** — ask in regular chat messages with numbered options
 
 ## Phase 4: Parallel SubAgent Reviews
 
