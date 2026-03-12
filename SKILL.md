@@ -635,15 +635,15 @@ Use this if `references/ui-patterns.md` not found.
 
 ---
 
-### Verification Process (when `-check` is used)
+### Verification Process (when "Verify Commits" is selected)
 
-Replaces steps 2-4 above. Step 0 (Stack Detection) still runs first.
+Runs when the user selects "Verify Commits" in Phase 1 Step 3. Stack Detection still runs first.
 
 **Skeptical default:** Every item starts UNVERIFIED. A keyword match is NOT proof of correctness. You must Read actual file content and verify it matches the plan's intent.
 
 **Priority order:** Complete Check 1 for ALL items first (it catches the most issues). Then Check 2 and Check 3 for items that passed Check 1. Then Check 4 for all Check 1 VERIFIED items. All four checks are mandatory — no skipping.
 
-1. **Detect Phases**: Run `git log --format="%H %s" -20` and match commit subjects against phase patterns (see Phase Detection below). If `-check N` was given, take the last N commits directly.
+1. **Detect Phases**: Run `git log --format="%H %s" -20` and match commit subjects against phase patterns (see Phase Detection below). If the user specifies a number of commits, take the last N commits directly.
 2. **Extract Plan Items**: For each phase commit, run `git log -1 --format="%b" <hash>` to get the body. Each bullet point (`-`, `*`, `+`) or non-empty line = one plan item. If no body, the subject line = single item.
 3. **Check 1 — Existence + Correctness**: For each plan item, search the codebase using Grep/Glob to locate it. Then **Read the actual file section** — do not stop at a Grep hit count. Verify the content semantically matches the plan intent. For code files, also verify syntax is valid (no obvious parse errors in the section you read). For markdown/docs, also verify internal links resolve and table structures are consistent (row counts, column counts, header alignment). Report: `VERIFIED` (content matches plan and is structurally sound) | `PRESENT_BUT_WRONG` (keyword/identifier exists but implementation doesn't match what the plan described — include detail) | `MISSING` (no codebase match at all) | `BROKEN` (exists but has syntax/structural errors).
 4. **Check 2 — Cross-Reference Consistency**: Trace ALL references to each plan item across files. If the plan adds N entries to a table/list/config, verify that N corresponding entries exist at every referencing location. Count table rows, checklist sections, config entries — numbers must match. Report: `CONSISTENT` | `INCONSISTENT — [N in location A, M in location B]` | `ORPHANED — [dangling reference at file:line]`.
@@ -654,7 +654,7 @@ Replaces steps 2-4 above. Step 0 (Stack Detection) still runs first.
 
 ---
 
-## Phase Detection (for `-check`)
+## Phase Detection (for Verify Commits)
 
 ### Commit Subject Patterns
 
@@ -728,7 +728,7 @@ When verifying that a new feature is integrated at ALL required locations, use t
 
 ---
 
-## Verification Output (for `-check`)
+## Verification Output (for Verify Commits)
 
 ```
 ## VERIFICATION: [Topic derived from phase subjects]
@@ -791,9 +791,9 @@ Items or checks that were skipped and WHY. This section is MANDATORY even when e
 [One brutal sentence that references the actual worst finding, not generic praise. If everything passed, explain what was tested and why it held up — not just "looks good."]
 ```
 
-### CHECK-FIX-PROMPT (if `-check -fix` combined)
+### CHECK-FIX-PROMPT (if "Verify Commits" + "Fix Prompt" both selected)
 
-Appended after VERDICT when both flags are present:
+Appended after VERDICT when both options are selected in the wizard:
 
 ```
 ### CHECK-FIX-PROMPT
@@ -808,7 +808,7 @@ Phase [X], Item [Y]: "[item text]"
   Fix: [specific action with file:line reference]
 
 Rules: NO AI comments, preserve existing functionality, test after change.
-After applying fixes, re-run `-check` to confirm all items now pass.
+After applying fixes, re-run "Verify Commits" to confirm all items now pass.
 ```
 
 > 10 failed items: Phase fix prompts in batches — CRITICAL first, then MAJOR, then MEDIUM+MINOR.
