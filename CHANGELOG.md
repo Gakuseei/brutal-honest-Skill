@@ -1,5 +1,17 @@
 # Changelog
 
+### 3.2.0 (2026-03-12) — Lean Main Chat
+- **Phase 2: Smart Split Architecture** — Main Chat no longer reads source files. Reads only config files for stack detection, builds file list, dispatches two parallel SubAgents: File Scanner (reads all files, returns summaries + suspicious patterns) and Web Research (mandatory, researches everything the model can't know from training)
+- **Phase 3: One Question at a Time** — questions asked individually in chat with numbered options and clear descriptions per option. If user asks "what do you mean?" the skill explains and re-asks instead of skipping. No more batching, no more bare labels
+- **Phase 4: Agents Read Their Own Files** — review SubAgents receive file paths + Scanner summaries, read files themselves. No more pasting file contents into agent prompts
+- **Phase 7: Findings-Only Dispatch** — Implementer and Spec Review SubAgents receive only findings list + file paths, read files themselves
+- **Web Research is Mandatory** — always runs in Phase 2, researches current versions, CVEs, API docs, competitor patterns, anything uncertain. Previous "when uncertain" trigger was too passive
+- **Updated Iron Rule #1** — clarifies that SubAgents read files, Main Chat only reads configs
+- **Added Red Flag** — "I'll paste file contents to the SubAgent" → send paths, not contents
+- **~70-80% token reduction** in Main Chat context for large project reviews
+- **Never skip findings** — fix cycle must address ALL findings per phase, ask user before skipping any
+- **TaskCreate phase tracking** — fix phases created upfront with blockedBy chains for progress visibility
+
 ### 3.1.0 (2026-03-12)
 - **Removed AskUserQuestion dependency** — all questions now conversational chat text, compatible with bypass permissions mode
 - **Fixed description** — now describes trigger conditions, not workflow (prevents Claude from shortcutting the skill)

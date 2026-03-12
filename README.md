@@ -1,89 +1,129 @@
 <div align="center">
 
-# brutal-honest
+<br>
 
-**Ruthless code review with evidence. No guessing, no hallucinating, no ego.**
+```
+  _                _        _       _                          _
+ | |__  _ __ _   _| |_ __ _| |     | |__   ___  _ __   ___  ___| |_
+ | '_ \| '__| | | | __/ _` | |_____| '_ \ / _ \| '_ \ / _ \/ __| __|
+ | |_) | |  | |_| | || (_| | |_____| | | | (_) | | | |  __/\__ \ |_
+ |_.__/|_|   \__,_|\__\__,_|_|     |_| |_|\___/|_| |_|\___||___/\__|
+```
 
-[![Version](https://img.shields.io/badge/v3.0.0-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
-[![Stacks](https://img.shields.io/badge/33_stacks-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
-[![AI Agnostic](https://img.shields.io/badge/any_LLM-1a1a2e?style=flat-square&labelColor=1a1a2e&color=2d2d44)](./SKILL.md)
+**code review that doesn't lie to you.**
+
+[![v3.2.0](https://img.shields.io/badge/v3.2.0-black?style=flat-square)](./CHANGELOG.md)
+&nbsp;
+[![33+ stacks](https://img.shields.io/badge/33+_stacks-black?style=flat-square)](./SKILL.md)
+&nbsp;
+[![any LLM](https://img.shields.io/badge/any_LLM-black?style=flat-square)](./SKILL.md)
 
 <br>
 
-![brutal-honest demo](/uploads/60973b9ed1e4780af65e5491c396f358/brutal-honest-promo.mp4)
-
 </div>
 
-## Install
+---
 
-```bash
-# Claude Code
-cp -r brutal-honest ~/.claude/skills/          # macOS/Linux
-Copy-Item -Recurse brutal-honest $env:USERPROFILE\.claude\skills\  # Windows
+### What it does
 
-# Any AI tool — project-level
-cp -r brutal-honest ./.agents/skills/
-
-# Any LLM — paste SKILL.md as system context
-```
-
-## Usage
-
-```bash
-# Start a review — wizard guides you through options
-/brutal-honest Review src/
-/brutal-honest Review my auth module
-/brutal-honest Review the whole project
-```
-
-No flags to memorize. The interactive wizard asks what to review, how to review, and what extras you want.
-
-## How It Works
+One command. Full review. Every finding has `file:line` proof or it doesn't exist.
 
 ```
-/brutal-honest → Wizard → Research → Follow-Up Questions → SubAgent Review → Output → Action → Fix Cycle → Summary
+/brutal-honest
 ```
 
-**1. Wizard** — Choose what to review (Security, Architecture, Performance, UI/UX), scope (diff/project/files), and extras (fix, features, verify).
+The wizard handles the rest.
 
-**2. Research** — Auto-detects stack, reads all files, checks framework versions, searches for CVEs and best practices when uncertain.
+---
 
-**3. Follow-Up Questions** — Asks about suspicious patterns AFTER reading code. Disabled features? Unusual configs? The AI asks before assuming.
-
-**4. Parallel SubAgent Reviews** — One agent per domain, all running in parallel. Every finding requires file:line evidence. No guessing.
-
-**5. Output** — Findings sorted by severity with evidence:
+### The pipeline
 
 ```
-CRITICAL    — security holes, crashes, data loss
-MAJOR       — ship blockers, missing error handling
-MEDIUM      — missing tests, wrong patterns
-MINOR       — style issues, debug code
-
-VERDICT     — one brutal sentence
+Wizard → Scanner + Research → Questions → Parallel Review → Findings → Fix Cycle → Done
 ```
 
-**6. Fix Cycle** — Choose how to fix: SubAgents (recommended), Agent Teams, or in-chat. SubAgent mode runs Implement → Spec Review → Code Quality Review → Commit per severity phase.
+| Phase | What happens |
+|-------|-------------|
+| **Wizard** | Pick domains, scope, extras |
+| **Scanner** | SubAgent reads every file, builds summaries |
+| **Research** | SubAgent searches versions, CVEs, APIs, patterns |
+| **Questions** | One at a time. Clear options. You decide what's intentional |
+| **Review** | Parallel agents per domain. Evidence required |
+| **Fix Cycle** | Implement → Spec Review → Quality Review → Commit |
 
-## Supported Stacks
+---
 
-| Category | Stacks |
-|----------|--------|
+### Severity
+
+```
+CRITICAL    security holes, crashes, data loss
+MAJOR       ship blockers, broken architecture
+MEDIUM      missing tests, wrong patterns
+MINOR       style, debug code, naming
+```
+
+One verdict. No sugarcoating.
+
+---
+
+### 33+ stacks
+
+| | |
+|---|---|
 | **Frontend** | React, Vue, Svelte, Angular, Astro, Remix, SolidJS |
 | **Backend** | Go, Rust, Python, PHP/Laravel, Ruby/Rails, Elixir/Phoenix, Hono |
-| **Native** | Swift/iOS, Kotlin, C/C++, C#/.NET, Flutter/Dart, Java/JVM, React Native |
-| **Game Engines** | Unity, Unreal, Godot, Bevy, Phaser, Three.js, PixiJS, Kaplay, Pygame, Love2D |
-| **Vanilla** | HTML/JS/CSS, Web Canvas Games |
+| **Native** | Swift, Kotlin, C/C++, C#/.NET, Flutter, Java/JVM, React Native |
+| **Games** | Unity, Unreal, Godot, Bevy, Phaser, Three.js, PixiJS, Kaplay, Pygame, Love2D |
+| **Vanilla** | HTML/JS/CSS, Web Canvas |
 
-## Works With Any LLM
+---
 
-| AI | How |
-|----|-----|
-| **Claude** | Claude Code skills (native) |
-| **GPT / Codex** | Custom instructions or system prompt |
-| **Gemini** | Gems or system instructions |
-| **Kimi** | Kimi CLI skills |
-| **Others** | Paste SKILL.md as system context |
+### Install
+
+```bash
+# Claude Code (recommended)
+cp -r brutal-honest ~/.claude/skills/
+
+# Any AI tool
+cp -r brutal-honest ./.agents/skills/
+
+# Raw — paste SKILL.md as system prompt
+```
+
+<details>
+<summary>Windows</summary>
+
+```powershell
+Copy-Item -Recurse brutal-honest $env:USERPROFILE\.claude\skills\
+```
+
+</details>
+
+---
+
+### Works with
+
+| Tool | Method |
+|------|--------|
+| **Claude Code** | Native skill |
+| **GPT / Codex** | System prompt |
+| **Gemini** | Gems |
+| **Any LLM** | Paste `SKILL.md` |
+
+---
+
+### v3.2.0 — Lean Main Chat
+
+Main Chat no longer reads source files. Two SubAgents handle the heavy lifting:
+
+- **File Scanner** reads every file, returns structured summaries
+- **Web Researcher** checks versions, CVEs, API docs, competitor patterns
+
+Questions asked one at a time with clear descriptions. Fix cycle dispatches findings + paths only — agents read files themselves.
+
+**~70-80% fewer tokens** in the main context window.
+
+[Full changelog](./CHANGELOG.md)
 
 ---
 
