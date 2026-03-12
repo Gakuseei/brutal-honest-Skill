@@ -340,6 +340,33 @@ Run verification against recent git history:
 - Check: existence + correctness, cross-references, regressions
 - Report as verification table with pass/fail per item
 
+## Phase 8: Final Summary
+
+After all phases complete, present a human-readable summary of everything.
+
+### Summary Content
+
+- What was reviewed (scope, stack, which domains)
+- What was found (count per severity, key issues in plain language)
+- What was fixed (if fix cycle ran)
+- What remains open (if anything was skipped or deferred)
+
+**No line numbers in the summary.** Write in human words, not technical jargon. Example:
+
+> "Reviewed the full Aria project (Electron + React). Found 2 critical security issues (hardcoded endpoint exposed to network, missing CSP headers), 5 major architecture problems, and 8 minor code style issues. All critical and major issues fixed and committed. Minor issues left as-is per your decision."
+
+### Final Question
+
+Use `AskUserQuestion`:
+
+- **header:** "Done"
+- **question:** "What now?"
+- **multiSelect:** false
+- **options:**
+  - label: "Another review", description: "Review a different project or set of files"
+  - label: "Re-review same files", description: "Check if everything is clean after fixes"
+  - label: "Done", description: "Finished, end the review session"
+
 ## Stack Detection (Step 0 — before analysis)
 
 Detect the project's tech stack before applying any checklist. This determines which severity items and checklist sections are relevant.
@@ -608,98 +635,6 @@ Use this if `references/ui-patterns.md` not found.
 
 ---
 
-## Conditional Output Logic
-
-Check user prompt for keywords ["-fix"], ["-features"] (or ["-feature"]), and ["-check"]. Both `-feature` and `-features` are valid and treated identically. Evaluate top-to-bottom, **first match wins** — do NOT combine branches:
-
-1. **`-check -fix`** → Verification Process ONLY (no review) → append CHECK-FIX-PROMPT after VERDICT for failed items
-2. **`-check`** alone → Verification Process ONLY (no review) → no fix prompt
-3. **`-fix -features`** → Normal Review → FIX-PROMPT + FEATURE-PROMPT (3 separate blocks)
-4. **`-fix`** alone → Normal Review → FIX-PROMPT (individual or phased if >10 issues)
-5. **`-features`** alone → Normal Review → FEATURE-PROMPT (new features, no bugfixes)
-6. **No flags** → Normal Review → "Shall I generate the fix prompt or feature ideas?"
-
-**Key rule:** When `-check` is present (branches 1-2), it REPLACES the normal review entirely. The Verification Process runs INSTEAD OF steps 2-4 of the Analysis Process. Never produce both a review and a verification in the same output. The CHECK-FIX-PROMPT (branch 1) is derived from verification findings — it is NOT the same as the regular FIX-PROMPT (branch 4).
-
-**`-check` syntax:**
-- `-check` — auto-detect phase commits via pattern matching
-- `-check N` (e.g. `-check 3`) — treat last N commits as phases
-
-## Analysis Process
-
-1. **Detect Stack** (Step 0): Check config files to identify tech stack and versions
-2. **Gather Context**: Analyze file structure, entry points, core logic
-3. **Load References**: Try external files first, fallback to embedded
-4. **Brutal Review**: Categorize by severity (CRITICAL/MAJOR/MEDIUM/MINOR) — only apply stack-relevant items
-5. **Apply Conditional Output Logic**
-
-### Review Output (when no `-check` flag)
-
-```
-## BRUTAL REVIEW: [Topic]
-
-### CRITICAL
-- [Finding with file/line]
-
-### MAJOR
-- [Finding]
-
-### MEDIUM
-- [Finding]
-
-### MINOR
-- [Finding]
-
-### VERDICT
-One brutal sentence.
-```
-
-### Example
-
-**Input:**
-```bash
-/brutal-honest Review my auth system -fix
-```
-
-**Output:**
-```markdown
-## BRUTAL REVIEW: Authentication
-
-### CRITICAL
-- Hardcoded API key - config.js:12 (security disaster)
-
-### VERDICT
-Security Swiss cheese. Fix CRITICAL before prod.
-
-### FIX-PROMPT
-"Fix auth system:
-config.js:12 Move API_KEY to environment variables (.env file or platform secrets manager)
-Rules: NO AI comments, test after change"
-```
-
-### FIX-PROMPT (if "-fix" requested)
-```
-## FIX-PROMPT
-
-Context: [What was analyzed]
-Issues: [Key problems from review]
-Requirements: [Specific fixes with file/line references]
-```
-
-> 10 Issues: Phase 1: CRITICAL fixes only | Phase 2: MAJOR fixes only | Phase 3: MEDIUM+MINOR combined
-
-### FEATURE-PROMPT (if "-features" requested)
-```
-## FEATURE-PROMPT
-
-Context: [What was analyzed]
-Current State: [Brief summary of existing functionality]
-Feature Ideas: [3-5 concrete, implementable feature suggestions]
-Priority: [High/Medium/Low with rationale]
-```
-
----
-
 ### Verification Process (when `-check` is used)
 
 Replaces steps 2-4 above. Step 0 (Stack Detection) still runs first.
@@ -893,22 +828,23 @@ Status-to-severity mapping:
 
 ## Error Messages
 
-- **No files:** "No files to tear apart. Give me code or images."
-- **Unclear topic:** "What exactly? Code? UI? Architecture? Be specific."
-- **No git repo (`-check`):** "Not a git repository. `-check` needs commit history to verify against."
-- **No phase commits (`-check`):** "No phase commits found. Use `-check N` to specify how many recent commits to verify, or write commit messages with 'Phase N:' / 'Step N:' prefixes."
-- **Empty commit bodies (`-check`):** "Commit bodies are empty — using subject lines as single items per phase. For better verification, write detailed commit messages with bullet-point plan items."
-- **Image error:** "Image format not supported or image not found."
+- **No files found:** "No files to review. Specify a scope or point me to your code."
+- **No stack detected:** Trigger Step 2 manual override question via AskUserQuestion
+- **SubAgent failed:** "Agent [name] failed. Retrying..." → retry once, if still fails skip domain and note in output
+- **No findings:** "Clean code. Nothing to report." (still output the VERDICT)
+- **No git repo (verify):** "Not a git repository. Verify Commits needs commit history."
+- **No phase commits (verify):** "No phase commits found. Write commit messages with 'Phase N:' prefixes."
 
 ## Rules
 
-- NO AI comments in code
-- Preserve existing features when fixing
-- Max 30 files context
-- Check current stable version of the detected framework using available tools or training knowledge — flag anything 2+ major versions behind; if unable to verify, state the assumption
-- AI security is CRITICAL — never downplay prompt injection
-- Always attempt external references first, but NEVER fail if not found
+- NO AI comments in code — never add comments mentioning AI, Claude, or automation
+- Preserve existing features when fixing — never break working functionality
+- Max 30 files context — prioritize configs, entry points, core logic
+- AI security is CRITICAL — never downplay prompt injection or token exposure
+- Always attempt external references first, but NEVER fail if not found — fall back to embedded
 - Only apply stack-specific checklist items when that stack is detected
-- When a game engine is detected, suppress web-only rules (Core Web Vitals, landing page patterns, anti-AI-slop font/gradient rules, lazy loading, CI/CD as MEDIUM). Apply game-specific performance metrics and patterns instead.
+- Game engines: suppress web-only rules (Core Web Vitals, landing page patterns, anti-AI-slop font/gradient rules). Apply game-specific metrics instead.
+- Research when uncertain — spawn Web Search SubAgent rather than guessing
+- Evidence over assumption — every finding needs file:line proof
 
 See [CHANGELOG.md](./CHANGELOG.md) for version history.
