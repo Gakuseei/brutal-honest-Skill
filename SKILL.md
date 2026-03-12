@@ -29,6 +29,59 @@ Ruthless expert analysis with evidence. No guessing, no hallucinating, no ego.
 /brutal-honest → Wizard (Phase 1) → Research (Phase 2) → Follow-Up Questions (Phase 3) → SubAgent Review (Phase 4) → Output (Phase 5) → Action Wizard (Phase 6) → Fix Cycle (Phase 7) → Summary (Phase 8)
 ```
 
+## Phase 1: Interactive Wizard
+
+When the skill is invoked, present a 3-step wizard. ALL steps use `AskUserQuestion`. Never ask questions as plain chat text.
+
+### Step 1 — What to Review
+
+Use `AskUserQuestion`:
+
+- **header:** "Review"
+- **question:** "What should I review?"
+- **multiSelect:** true
+- **options:**
+  - label: "Security", description: "OWASP, secrets, auth, input validation, AI security, dependency audit"
+  - label: "Architecture & Code", description: "File structure, dependencies, DRY, error handling, types, testing coverage"
+  - label: "Performance", description: "Core Web Vitals / frame budget, assets, caching, lazy loading, N+1 queries"
+  - label: "UI/UX & Accessibility", description: "WCAG 2.2, mobile/responsive, visual hierarchy, anti-AI-slop patterns"
+
+"Other" is always available via AskUserQuestion for custom focus areas.
+
+### Step 2 — Review Settings
+
+Use `AskUserQuestion` with 2 questions:
+
+**Question 1:**
+- **header:** "Scope"
+- **question:** "What files should I review?"
+- **multiSelect:** false
+- **options:**
+  - label: "git diff only (Recommended)", description: "Only changed files since last commit"
+  - label: "Entire project", description: "All project files (max 30, prioritized by importance)"
+  - label: "Specific files/folders", description: "You specify which files or directories"
+
+**Question 2:**
+- **header:** "Stack"
+- **question:** "How should I detect your tech stack?"
+- **multiSelect:** false
+- **options:**
+  - label: "Auto-detect (Recommended)", description: "Check config files (package.json, go.mod, etc.) automatically"
+  - label: "Manual override", description: "You tell me which stack to review against"
+
+### Step 3 — After the Review
+
+Use `AskUserQuestion`:
+
+- **header:** "Extras"
+- **question:** "What do you want after the review?"
+- **multiSelect:** true
+- **options:**
+  - label: "Fix Prompt", description: "Generate fix instructions grouped by severity"
+  - label: "Feature Ideas", description: "Spawn a Feature Scout SubAgent that explores and suggests 3-5 implementable features"
+  - label: "Verify Commits", description: "Run verification pipeline against recent git history"
+  - label: "Review only (Recommended)", description: "Just the brutal review, no extras"
+
 ## Stack Detection (Step 0 — before analysis)
 
 Detect the project's tech stack before applying any checklist. This determines which severity items and checklist sections are relevant.
