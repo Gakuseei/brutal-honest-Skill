@@ -1,7 +1,7 @@
 ---
 name: brutal-honest
 description: Use when user wants honest code/UI/architecture review. Launches interactive wizard, then parallel SubAgent reviews with mandatory evidence. Tech-stack agnostic, 33 stacks supported.
-allowed-tools: Read Glob Grep Bash Agent AskUserQuestion WebSearch
+allowed-tools: Read Glob Grep Bash Agent WebSearch
 metadata:
   author: gakuseeii
   author_url: https://gitlab.com/Gakuseeii
@@ -21,7 +21,6 @@ Ruthless expert analysis with evidence. No guessing, no hallucinating, no ego.
 4. **If uncertain → ASK the user or RESEARCH** — never guess
 5. **If something looks intentional → ASK, don't flag** — one question too many > one false finding
 6. **NEVER invent findings** — hallucinated findings are worse than no findings
-7. **ALL user interaction via AskUserQuestion** — never ask questions as chat text
 
 ## Process Flow
 
@@ -31,56 +30,40 @@ Ruthless expert analysis with evidence. No guessing, no hallucinating, no ego.
 
 ## Phase 1: Interactive Wizard
 
-When the skill is invoked, present a 3-step wizard. ALL steps use `AskUserQuestion`. Never ask questions as plain chat text.
+When the skill is invoked, present a 3-step wizard. Ask questions conversationally with numbered options. Prefer multiple choice when possible, open-ended is fine too.
 
 ### Step 1 — What to Review
 
-Use `AskUserQuestion`:
+Ask the user (multiple selections allowed):
 
-- **header:** "Review"
-- **question:** "What should I review?"
-- **multiSelect:** true
-- **options:**
-  - label: "Security", description: "OWASP, secrets, auth, input validation, AI security, dependency audit"
-  - label: "Architecture & Code", description: "File structure, dependencies, DRY, error handling, types, testing coverage"
-  - label: "Performance", description: "Core Web Vitals / frame budget, assets, caching, lazy loading, N+1 queries"
-  - label: "UI/UX & Accessibility", description: "WCAG 2.2, mobile/responsive, visual hierarchy, anti-AI-slop patterns"
+1. **Security** — OWASP, secrets, auth, input validation, AI security, dependency audit
+2. **Architecture & Code** — File structure, dependencies, DRY, error handling, types, testing coverage
+3. **Performance** — Core Web Vitals / frame budget, assets, caching, lazy loading, N+1 queries
+4. **UI/UX & Accessibility** — WCAG 2.2, mobile/responsive, visual hierarchy, anti-AI-slop patterns
 
-"Other" is always available via AskUserQuestion for custom focus areas.
+Or they can describe a custom focus area.
 
 ### Step 2 — Review Settings
 
-Use `AskUserQuestion` with 2 questions:
+Ask two things:
 
-**Question 1:**
-- **header:** "Scope"
-- **question:** "What files should I review?"
-- **multiSelect:** false
-- **options:**
-  - label: "git diff only (Recommended)", description: "Only changed files since last commit"
-  - label: "Entire project", description: "All project files (max 30, prioritized by importance)"
-  - label: "Specific files/folders", description: "You specify which files or directories"
+**Scope — What files should I review?**
+1. git diff only (Recommended) — only changed files since last commit
+2. Entire project — all project files (max 30, prioritized by importance)
+3. Specific files/folders — user specifies which files or directories
 
-**Question 2:**
-- **header:** "Stack"
-- **question:** "How should I detect your tech stack?"
-- **multiSelect:** false
-- **options:**
-  - label: "Auto-detect (Recommended)", description: "Check config files (package.json, go.mod, etc.) automatically"
-  - label: "Manual override", description: "You tell me which stack to review against"
+**Stack — How should I detect your tech stack?**
+1. Auto-detect (Recommended) — check config files (package.json, go.mod, etc.) automatically
+2. Manual override — user tells you which stack
 
 ### Step 3 — After the Review
 
-Use `AskUserQuestion`:
+Ask the user (multiple selections allowed):
 
-- **header:** "Extras"
-- **question:** "What do you want after the review?"
-- **multiSelect:** true
-- **options:**
-  - label: "Fix Prompt", description: "Generate fix instructions grouped by severity"
-  - label: "Feature Ideas", description: "Spawn a Feature Scout SubAgent that explores and suggests 3-5 implementable features"
-  - label: "Verify Commits", description: "Run verification pipeline against recent git history"
-  - label: "Review only (Recommended)", description: "Just the brutal review, no extras"
+1. **Fix Prompt** — generate fix instructions grouped by severity
+2. **Feature Ideas** — spawn a Feature Scout SubAgent that explores and suggests 3-5 implementable features
+3. **Verify Commits** — run verification pipeline against recent git history
+4. **Review only (Recommended)** — just the brutal review, no extras
 
 ## Phase 2: Research + Discovery (automatic)
 
@@ -123,11 +106,11 @@ Flag anything suspicious for Phase 3 follow-up questions.
 
 ## Phase 3: Informed Follow-Up Questions
 
-After reading the actual code, ask targeted questions based on REAL findings. Every question uses `AskUserQuestion` with recommended answers.
+After reading the actual code, ask targeted questions based on REAL findings. Present questions conversationally with recommended answers.
 
 ### When to Ask
 
-Ask via `AskUserQuestion` when you find something that COULD be a deliberate decision:
+Ask the user when you find something that COULD be a deliberate decision:
 
 - **Disabled features** — "Feature X is disabled via early return at `file:line`. Intentional?"
   - Yes, I'm testing something (Recommended if code looks deliberate)
@@ -148,7 +131,7 @@ Ask via `AskUserQuestion` when you find something that COULD be a deliberate dec
 ### Core Rules for Questions
 
 1. **Only ask about things you ACTUALLY FOUND** — never hypothetical questions
-2. **Maximum 4 questions per AskUserQuestion call** (tool limit) — batch related questions
+2. **Batch related questions** — ask multiple related things at once, not one by one
 3. **Include (Recommended) on the option you'd suggest** based on what the code looks like
 4. **Answers inform the review** — intentional patterns are excluded from findings, confirmed bugs are flagged
 5. **If nothing suspicious found → skip Phase 3 entirely** — don't ask questions for the sake of asking
@@ -271,16 +254,14 @@ Omit empty severity sections. If no findings in a severity level, don't include 
 
 ## Phase 6: Action Wizard
 
-After presenting the review, ask the user what to do next via `AskUserQuestion`:
+After presenting the review, ask the user what to do next:
 
-- **header:** "Next Step"
-- **question:** "How do you want to handle the findings?"
-- **multiSelect:** false
-- **options:**
-  - label: "Fix via SubAgents (Recommended)", description: "Phase-by-phase: Implement → Spec Review → Code Quality Review → Commit. Cheapest and most reliable."
-  - label: "Fix via Agent Teams", description: "Parallel execution with persistent agents. More powerful but 3-5x more expensive in tokens."
-  - label: "Fix it yourself", description: "I'll assist in chat but you drive the fixes."
-  - label: "Discuss first", description: "Let's talk through the findings before deciding on action."
+**How do you want to handle the findings?**
+
+1. **Fix via SubAgents (Recommended)** — Phase-by-phase: Implement → Spec Review → Code Quality Review → Commit. Cheapest and most reliable.
+2. **Fix via Agent Teams** — Parallel execution with persistent agents. More powerful but 3-5x more expensive in tokens.
+3. **Fix it yourself** — I'll assist in chat but you drive the fixes.
+4. **Discuss first** — Let's talk through the findings before deciding on action.
 
 ## Phase 7: Fix Cycle (subagent-driven-development)
 
@@ -330,7 +311,7 @@ After all fix phases complete (or after review-only), spawn a separate SubAgent:
 - Explores the entire project: structure, patterns, features, architecture
 - Suggests 3-5 concrete, implementable features
 - Each suggestion includes: what it does, why it adds value, rough complexity (small/medium/large)
-- Presents suggestions via `AskUserQuestion` for the user to pick favorites
+- Presents suggestions for the user to pick favorites
 
 ### Verify Commits (if selected in Phase 1 wizard)
 
@@ -357,15 +338,12 @@ After all phases complete, present a human-readable summary of everything.
 
 ### Final Question
 
-Use `AskUserQuestion`:
+Ask the user:
 
-- **header:** "Done"
-- **question:** "What now?"
-- **multiSelect:** false
-- **options:**
-  - label: "Another review", description: "Review a different project or set of files"
-  - label: "Re-review same files", description: "Check if everything is clean after fixes"
-  - label: "Done", description: "Finished, end the review session"
+**What now?**
+1. **Another review** — review a different project or set of files
+2. **Re-review same files** — check if everything is clean after fixes
+3. **Done** — finished, end the review session
 
 ## Stack Detection (Step 0 — before analysis)
 
@@ -829,7 +807,7 @@ Status-to-severity mapping:
 ## Error Messages
 
 - **No files found:** "No files to review. Specify a scope or point me to your code."
-- **No stack detected:** Trigger Step 2 manual override question via AskUserQuestion
+- **No stack detected:** Ask the user to specify their stack manually
 - **SubAgent failed:** "Agent [name] failed. Retrying..." → retry once, if still fails skip domain and note in output
 - **No findings:** "Clean code. Nothing to report." (still output the VERDICT)
 - **No git repo (verify):** "Not a git repository. Verify Commits needs commit history."
