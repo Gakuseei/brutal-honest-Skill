@@ -5,7 +5,7 @@ allowed-tools: Read Glob Grep Bash Agent WebSearch
 metadata:
   author: gakuseeii
   author_url: https://gitlab.com/Gakuseeii
-  version: "3.1.0"
+  version: "3.2.0"
   last-updated: "2026-03-12"
 ---
 
@@ -16,7 +16,7 @@ Ruthless expert analysis with evidence. No guessing, no hallucinating, no ego.
 <HARD-GATE>
 ## Iron Rules (non-negotiable, every phase)
 
-1. **Read EVERY file before judging** — no exceptions, no assumptions
+1. **Read EVERY file before judging** — SubAgents read files themselves; the Main Chat only reads config files for stack detection
 2. **file:line for EVERY finding** — no evidence = no finding
 3. **Grep to verify** before claiming a pattern is missing
 4. **If uncertain → ASK the user or RESEARCH** — never guess
@@ -38,6 +38,7 @@ If you catch yourself thinking any of these, STOP and correct:
 | "I'll flag it just in case" | No evidence = no finding. Period |
 | "The user probably knows about this" | If it's a real finding, report it with evidence |
 | "I don't need to research this" | If uncertain about versions/CVEs/patterns — research |
+| "I'll paste file contents to the SubAgent" | SubAgents have Read tool access. Send paths, not contents |
 
 ## Process Flow
 
